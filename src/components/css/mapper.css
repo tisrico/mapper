@@ -1,0 +1,27 @@
+.split {
+    float: left;
+    height: calc(100vh - 72px);
+    border: 1px solid #C8C8CFFF;
+    border-radius: 4px;
+    -moz-box-shadow:    inset 0 0 3px #E8E5F1FF;
+    -webkit-box-shadow: inset 0 0 3px #E8E5F1FF;
+    box-shadow:         inset 0 0 3px #E8E5F1FF;
+    overflow: hidden;
+    padding: 5px 2px 5px 2px;
+}
+.split-left {
+    margin: 0px 0px 0px 0px;
+}
+.split-right {
+    margin: 0px 0px 0px 0px;
+}
+.gutter.gutter-horizontal {
+    float: left;
+    height: calc(100vh - 72px);
+    opacity: 0.2;
+    background-repeat: no-repeat;
+    background-image: url("../img/drag.png");
+    background-position: 48% 52%;
+    background-size: 10px 36px;
+    cursor: ew-resize;
+}
