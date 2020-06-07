@@ -84,6 +84,10 @@ class Menu extends Component {
         reader.readAsText(selected);
     };
 
+    componentDidMount() {
+        this.fileLoaderRef = React.createRef();
+    }
+
     render() {
         const {
             settings,
@@ -93,9 +97,6 @@ class Menu extends Component {
             selectedView,
             onSelectView,
         } = this.props;
-
-        if (!this.fileLoaderRef)
-            this.fileLoaderRef = React.createRef();
 
         return (
             <React.Fragment>
@@ -113,7 +114,7 @@ class Menu extends Component {
                                 </NavDropdown.Item>
                             </NavDropdown>
                             <NavDropdown
-                                title="Diagram"
+                                title="Display"
                                 id="basic-nav-dropdown"
                             >
                                 <NavDropdown.Item
