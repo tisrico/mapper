@@ -363,7 +363,9 @@ export class NetDiagram {
       let tmp_val = node_list[i].data.getElementsByTagName(key)[0];
       if (!tmp_val)
         continue;
-      if (tmp_val.textContent === value) {
+
+      // Use string to compare
+      if (tmp_val.textContent === value.toString()) {
         return node_list[i];
       }
     }
@@ -531,3 +533,6 @@ export class NetDiagram {
     return true;
   }
 }
+
+
+

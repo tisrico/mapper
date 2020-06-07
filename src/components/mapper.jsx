@@ -70,7 +70,7 @@ class Mapper extends Component {
         let t0 = performance.now();
 
         this.diagram = new this.props.diagramClass();
-        if (!this.diagram.parseXml(xmlData) || !this.diagram) return false;
+        if (!this.diagram.parseXml(xmlData)) return false;
 
         /* Get views */
         let views = [];
@@ -139,8 +139,6 @@ class Mapper extends Component {
                 ]
             );
         }
-
-        console.log(data);
 
         const container = this.visNetworkRef.current;
         if (!container) {

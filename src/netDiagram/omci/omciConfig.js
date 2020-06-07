@@ -71,6 +71,7 @@ export var OmciConfigVisDisplay = {
   interaction: {
     hover: true,
     hoverConnectedEdges: true,
+    tooltipDelay: 80,
   }
 };
 

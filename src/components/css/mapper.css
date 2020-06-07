@@ -14,6 +14,7 @@
 }
 .split-right {
     margin: 0px 0px 0px 0px;
+    overflow: auto;
 }
 .gutter.gutter-horizontal {
     float: left;
