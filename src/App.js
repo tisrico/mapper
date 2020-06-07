@@ -1,9 +1,13 @@
 import React from "react";
-import Mapper from "./components/mapper"
+import Mapper from "./components/mapper";
 import "./App.css";
 
 import OmciDiagram from "./netDiagram/omci/omciDiagram";
-import { OmciConfigDiagramDisplay, OmciConfigVisDisplay } from "./netDiagram/omci/omciConfig";
+import {
+  OmciConfigDiagramDisplay,
+  OmciConfigVisDisplay,
+  OmciConfigJsTreeDisplay,
+} from "./netDiagram/omci/omciConfig";
 
 function App() {
   return (
@@ -12,8 +16,9 @@ function App() {
         mode="OMCI"
         diagramClass={OmciDiagram}
         configVisDisplay={OmciConfigVisDisplay}
+        configJsTreeDisplay={OmciConfigJsTreeDisplay}
         configDiagramDisplay={OmciConfigDiagramDisplay}
-        />
+      />
     </main>
   );
 }

@@ -1,5 +1,3 @@
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -92,7 +90,7 @@ var TreeView = function (_Component) {
       var treeData;
 
       if (this.props.treeConfig) {
-        treeData = { ... this.props.treeConfig };
+        treeData = { ...this.props.treeConfig };
         treeData.core.data = this.props.treeData;
       }
       else {

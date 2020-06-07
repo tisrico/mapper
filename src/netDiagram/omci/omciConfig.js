@@ -68,6 +68,10 @@ export var OmciConfigVisDisplay = {
       size: 26,
     },
   },
+  interaction: {
+    hover: true,
+    hoverConnectedEdges: true,
+  }
 };
 
 export var OmciConfigJsTreeDisplay = {

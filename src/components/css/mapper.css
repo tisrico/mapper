@@ -25,3 +25,13 @@
     background-size: 10px 36px;
     cursor: ew-resize;
 }
+
+.node_title {
+  font-size: 80%;
+}
+.node_key {
+  font-weight: bold;
+}
+.node_extend_info {
+  margin-left: 10px;
+}

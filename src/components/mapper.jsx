@@ -1,19 +1,13 @@
 import React, { Component } from "react";
 import Split from "react-split";
 import vis from "vis";
-
+import "vis/dist/vis-network.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 
 import TreeView from "./treeView";
 import Menu from "./menu";
 import "./css/mapper.css";
-
-var _jquery = require("jquery");
-var _jquery2 = _interopRequireDefault(_jquery);
-function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : { default: obj };
-}
 
 class Mapper extends Component {
     state = {
@@ -145,6 +139,8 @@ class Mapper extends Component {
                 ]
             );
         }
+
+        console.log(data);
 
         const container = this.visNetworkRef.current;
         if (!container) {
