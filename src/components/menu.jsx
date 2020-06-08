@@ -145,6 +145,7 @@ class Menu extends Component {
                                     : selectedView
                             }
                             disabled={settings.show_all || views.length < 1}
+                            alignRight
                         >
                             {views.map((view) => (
                                 <Dropdown.Item

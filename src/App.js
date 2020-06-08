@@ -17,7 +17,7 @@ import {
 } from "./netDiagram/model1/model1Config";
 
 function App() {
-  let mode = "Model1";
+  let mode = "OMCI";
   let diagramClass = null;
   let configVisDisplay = null;
   let configJsTreeDisplay = null;
