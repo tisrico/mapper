@@ -9,15 +9,42 @@ import {
   OmciConfigJsTreeDisplay,
 } from "./netDiagram/omci/omciConfig";
 
+import Model1Diagram from "./netDiagram/model1/model1Diagram";
+import {
+  Model1ConfigDiagramDisplay,
+  Model1ConfigVisDisplay,
+  Model1ConfigJsTreeDisplay,
+} from "./netDiagram/model1/model1Config";
+
 function App() {
+  let mode = "Model1";
+  let diagramClass = null;
+  let configVisDisplay = null;
+  let configJsTreeDisplay = null;
+  let configDiagramDisplay = null;
+
+  if (mode === "OMCI") {
+    diagramClass = OmciDiagram;
+    configVisDisplay = OmciConfigVisDisplay;
+    configJsTreeDisplay = OmciConfigJsTreeDisplay;
+    configDiagramDisplay = OmciConfigDiagramDisplay;
+  } else if (mode === "Model1") {
+    diagramClass = Model1Diagram;
+    configVisDisplay = Model1ConfigVisDisplay;
+    configJsTreeDisplay = Model1ConfigJsTreeDisplay;
+    configDiagramDisplay = Model1ConfigDiagramDisplay;
+  } else {
+    return <main className="container-fluid">Unsupported mode {mode}</main>;
+  }
+
   return (
     <main className="container-fluid">
       <Mapper
-        mode="OMCI"
-        diagramClass={OmciDiagram}
-        configVisDisplay={OmciConfigVisDisplay}
-        configJsTreeDisplay={OmciConfigJsTreeDisplay}
-        configDiagramDisplay={OmciConfigDiagramDisplay}
+        mode={mode}
+        diagramClass={diagramClass}
+        configVisDisplay={configVisDisplay}
+        configJsTreeDisplay={configJsTreeDisplay}
+        configDiagramDisplay={configDiagramDisplay}
       />
     </main>
   );
