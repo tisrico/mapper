@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Modal, Form, FormFile, Button } from "react-bootstrap";
 
+import "./css/menu.css";
+
 export class FileLoader extends Component {
     render() {
         const { fileLoaderRef, show, onClose, onSelect } = this.props;

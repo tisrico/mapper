@@ -4,9 +4,11 @@ import vis from "vis";
 import "vis/dist/vis-network.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
+import { Modal, Spinner } from "react-bootstrap";
 
 import TreeView from "./treeView";
 import Menu from "./menu";
+import ModalSpinner from "./modalSpinner"
 import "./css/mapper.css";
 
 class Mapper extends Component {
@@ -16,11 +18,13 @@ class Mapper extends Component {
             show_all: false,
         },
 
+        showProgress: false,
+
         views: [],
         selectedView: null,
 
         treeData: [],
-        treeConfig: {...this.props.configJsTreeDisplay},
+        treeConfig: { ...this.props.configJsTreeDisplay },
     };
 
     componentDidMount() {
@@ -40,14 +44,17 @@ class Mapper extends Component {
         const settings = { ...this.state.settings };
         settings.show_all = !settings.show_all;
 
+        if (settings.show_all)
+            this.showProgress(true);
+
         this.state.settings.show_all = settings.show_all;
         this.setState({ settings });
+
         this.showNetwork();
     };
 
     handleLoadedData = (xmlData) => {
-        if (this.loadedXmlData(xmlData))
-            this.showNetwork();
+        if (this.loadedXmlData(xmlData)) this.showNetwork();
     };
 
     handleSelectView = (view) => {
@@ -58,19 +65,32 @@ class Mapper extends Component {
 
     handleSelectNode = (visNetworkObj) => {
         let selected = this.diagram.getNode(visNetworkObj.nodes[0]);
-        if (selected)
-            this.showNetworkInfo([selected.drawAttr()]);
+        if (selected) this.showNetworkInfo([selected.drawAttr()]);
     };
 
     handleDeselectNode = (visNetworkObj) => {
         this.showNetworkInfo(null);
     };
 
+    handleAfterDrawing = (visCanvas) => {
+        this.showProgress(false);
+    };
+
+    showProgress(newState) {
+        if (newState === this.state.showProgress) return;
+
+        this.setState({ showProgress: newState });
+    }
+
     loadedXmlData(xmlData) {
+        this.showProgress(true);
         let t0 = performance.now();
 
         this.diagram = new this.props.diagramClass();
-        if (!this.diagram.parseXml(xmlData)) return false;
+        if (!this.diagram.parseXml(xmlData)) {
+            this.showProgress(false);
+            return false;
+        }
 
         /* Get views */
         let views = [];
@@ -111,8 +131,7 @@ class Mapper extends Component {
     }
 
     showNetwork() {
-        if (!this.diagram)
-            return;
+        if (!this.diagram) return;
 
         var t0 = performance.now();
 
@@ -145,12 +164,13 @@ class Mapper extends Component {
             return;
         }
 
-        let config = {...this.props.configVisDisplay};
+        let config = { ...this.props.configVisDisplay };
         config.physics.enabled = this.state.settings.physics;
 
         this.visNetwork = new vis.Network(container, data, config);
         this.visNetwork.on("selectNode", this.handleSelectNode);
         this.visNetwork.on("deselectNode", this.handleDeselectNode);
+        this.visNetwork.on("afterDrawing", this.handleAfterDrawing);
 
         let t1 = performance.now();
         this.displayInfo = {
@@ -179,13 +199,13 @@ class Mapper extends Component {
     showNetworkInfo(displayInfo) {
         if (displayInfo == null)
             this.setState({ treeData: [this.networkInfo, this.displayInfo] });
-        else
-            this.setState({ treeData: displayInfo });
+        else this.setState({ treeData: displayInfo });
     }
 
     render() {
         const {
             settings,
+            showProgress,
             selectedView,
             views,
             treeData,
@@ -194,6 +214,7 @@ class Mapper extends Component {
 
         return (
             <div>
+                <ModalSpinner show={showProgress} />
                 <Menu
                     title={this.props.mode + " Mapper"}
                     settings={settings}
@@ -214,7 +235,10 @@ class Mapper extends Component {
                     direction="horizontal"
                     cursor="col-resize"
                 >
-                    <div className="split split-left" ref={this.visNetworkRef}></div>
+                    <div
+                        className="split split-left"
+                        ref={this.visNetworkRef}
+                    ></div>
                     <TreeView
                         className="split split-right"
                         treeConfig={treeConfig}
