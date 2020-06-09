@@ -35,6 +35,7 @@ class Mapper extends Component {
 
     componentDidMount() {
         this.visNetworkRef = React.createRef();
+        this.startRequestXmlData();
     }
 
     handleTogglePhysics = () => {
@@ -58,10 +59,14 @@ class Mapper extends Component {
         this.showNetwork();
     };
 
+    handleRefreshData = () => {
+        this.startRequestXmlData();
+    }
+
     handleLoadedData = (xmlFilename, xmlData) => {
         if (this.loadedXmlData(xmlFilename, xmlData)) {
             this.showNetwork();
-            this.showMsg("Loaded XML data from " + xmlFilename + ".");
+            this.showMsg("Loaded XML data from file " + xmlFilename + ".");
         }
     };
 
@@ -136,6 +141,21 @@ class Mapper extends Component {
         if (newState === this.state.showSpinner) return;
 
         this.setState({ showSpinner: newState });
+    }
+
+    startRequestXmlData() {
+        if (!this.props.dataRequestFunc)
+            return;
+
+        this.props.dataRequestFunc(
+            (xmlFilename, xmlData) => {
+                if (this.loadedXmlData(xmlFilename, xmlData)) {
+                    this.showNetwork();
+                    this.showMsg("Retrieved XML data " + xmlFilename + ".");
+                }
+            },
+            (message) => {this.showMsg(message)}
+        );
     }
 
     loadedXmlData(xmlFilename, xmlData) {
@@ -309,6 +329,7 @@ class Mapper extends Component {
                     title={this.props.mode + " Mapper"}
                     settings={settings}
                     dataAvailable={this.xmlData ? true : false}
+                    onRefresh={this.handleRefreshData}
                     onLoadedData={this.handleLoadedData}
                     onViewXml={this.handleViewXml}
                     onSaveXml={this.handleSaveXml}

@@ -97,6 +97,7 @@ class Menu extends Component {
         const {
             settings,
             dataAvailable,
+            onRefresh,
             onViewXml,
             onSaveXml,
             onTogglePhysics,
@@ -117,7 +118,11 @@ class Menu extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
                             <NavDropdown id="menuLoad" title="Load">
-                                <NavDropdown.Item>Refresh</NavDropdown.Item>
+                                <NavDropdown.Item
+                                    onClick={() => onRefresh()}
+                                >
+                                    Refresh
+                                </NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item
                                     onClick={() => onViewXml()}
