@@ -116,7 +116,7 @@ class Menu extends Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <NavDropdown title="Load">
+                            <NavDropdown id="menuLoad" title="Load">
                                 <NavDropdown.Item>Refresh</NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item
@@ -139,7 +139,7 @@ class Menu extends Component {
                                     From file...
                                 </NavDropdown.Item>
                             </NavDropdown>
-                            <NavDropdown title="Display">
+                            <NavDropdown id="menuDisplay" title="Display">
                                 <NavDropdown.Item
                                     id="togglePhysics"
                                     onClick={() => onTogglePhysics()}
@@ -157,6 +157,7 @@ class Menu extends Component {
                                 </NavDropdown.Item>
                             </NavDropdown>
                             <NavDropdown
+                                id="menuHide"
                                 title="Hide"
                                 disabled={
                                     avoidableNodes.length < 1 ? true : false
