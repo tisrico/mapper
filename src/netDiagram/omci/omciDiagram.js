@@ -1250,7 +1250,7 @@ var omciDisplayTemplate = {
   GemTrafficDescriptor: {
     NodeTemplate: {
       level: 6,
-      display_name: "Traffic descriptor",
+      display_name: "GEM Traffic Descriptor",
       color: "#9C9C9C",
     },
   },

@@ -1,6 +1,12 @@
 export var OmciConfigDiagramDisplay = {
   MacBridgeServiceProfile: {
-    AvoidNode: [],
+    AvoidableNode: [
+      "PriorityQueueG",
+      "TrafficSchedulerG",
+      "ExtendedVlanTaggingOperationConfigurationData",
+      "Dot1agCFMStack",
+      "UniG",
+    ],
     AvoidLink: {
       VirtualEthernetInterfacePoint: ["CircuitPack"],
       PptpEthernetUni: ["CircuitPack"],
@@ -13,14 +19,24 @@ export var OmciConfigDiagramDisplay = {
     },
   },
   OntG: {
-    AvoidNode: [],
+    AvoidableNode: [
+      "PptpEthernetUni",
+      "VirtualEthernetInterfacePoint",
+      "CircuitPack",
+      "SoftwareImage",
+    ],
     AvoidLink: {
       PptpEthernetUni: "*",
       VirtualEthernetInterfacePoint: "*",
     },
   },
   OnuG: {
-    AvoidNode: [],
+    AvoidableNode: [
+      "PptpEthernetUni",
+      "VirtualEthernetInterfacePoint",
+      "CircuitPack",
+      "SoftwareImage",
+    ],
     AvoidLink: {
       PptpEthernetUni: "*",
       VirtualEthernetInterfacePoint: "*",
@@ -73,7 +89,7 @@ export var OmciConfigVisDisplay = {
     hoverConnectedEdges: true,
     tooltipDelay: 80,
     navigationButtons: true,
-  }
+  },
 };
 
 export var OmciConfigJsTreeDisplay = {

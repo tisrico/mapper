@@ -284,11 +284,15 @@ export class NetDiagram {
     this.defaultLinkCLass = NetLink;
   }
 
-  draw() {
+  draw(avoidNodeInfo) {
       let nodes = new vis.DataSet([]);
       let edges = new vis.DataSet([]);
+      let avoid = avoidNodeInfo ? avoidNodeInfo : [];
 
       for (let itemType in this.nodes) {
+        if (avoid.includes(itemType))
+          continue;
+
         for (let i = 0; i < this.nodes[itemType].length; i++) {
           nodes.add(this.nodes[itemType][i].draw())
         }

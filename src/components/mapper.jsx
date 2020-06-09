@@ -26,6 +26,9 @@ class Mapper extends Component {
         views: [],
         selectedView: null,
 
+        avoidableNodes: [],
+        avoidedNodes: [],
+
         treeData: [],
         treeConfig: { ...this.props.configJsTreeDisplay },
     };
@@ -47,7 +50,7 @@ class Mapper extends Component {
         const settings = { ...this.state.settings };
         settings.show_all = !settings.show_all;
 
-        if (settings.show_all) this.showSpinner(true);
+        if (this.diagram && settings.show_all) this.showSpinner(true);
 
         this.state.settings.show_all = settings.show_all;
         this.setState({ settings });
@@ -75,7 +78,7 @@ class Mapper extends Component {
                 (this.xmlData ? this.xmlData : "").replace(/[&<>]/g, (tag) => {
                     return tagsToReplace[tag] || tag;
                 }) +
-            "</pre>"
+                "</pre>"
         );
         reference.document.close();
     };
@@ -101,6 +104,22 @@ class Mapper extends Component {
     handleSelectView = (view) => {
         this.state.selectedView = view;
         this.setState({ selectedView: view });
+        this.showNetwork();
+    };
+
+    handleToggleAvoidNode = (node) => {
+        let avoidedNodes = [...this.state.avoidedNodes];
+        if (avoidedNodes.includes(node)) {
+            const idx = avoidedNodes.indexOf(node);
+            if (idx > -1) avoidedNodes.splice(idx, 1);
+        } else {
+            avoidedNodes.push(node);
+        }
+
+        if (this.diagram && this.state.settings.show_all) this.showSpinner(true);
+
+        this.state.avoidedNodes = avoidedNodes;
+        this.setState({ avoidedNodes });
         this.showNetwork();
     };
 
@@ -171,6 +190,24 @@ class Mapper extends Component {
         return true;
     }
 
+    updateAvoidableNodes(newAvoidableNodes) {
+        let array1 = newAvoidableNodes;
+        let array2 = this.state.avoidableNodes;
+
+        if (
+            !(
+                array1.length === array2.length &&
+                array1.sort().every(function (value, index) {
+                    return value === array2.sort()[index];
+                })
+            )
+        ) {
+            this.state.avoidableNodes = newAvoidableNodes;
+            this.state.avoidedNodes = [];
+            this.setState({ avoidableNodes: newAvoidableNodes, avoidedNodes: [] });
+        }
+    }
+
     showNetwork() {
         if (!this.diagram) return;
 
@@ -186,14 +223,15 @@ class Mapper extends Component {
 
         let data = null;
         if (displayTreeRoot == null) {
-            data = this.diagram.draw();
+            this.updateAvoidableNodes(Object.keys(this.diagram.nodes));
+            data = this.diagram.draw(this.state.avoidedNodes);
         } else {
+            this.updateAvoidableNodes(
+                this.props.configDiagramDisplay[displayTreeRoot.type]["AvoidableNode"]);
             data = this.diagram.drawNodeTree(
                 displayTreeRoot.type,
                 displayTreeRoot.key,
-                this.props.configDiagramDisplay[displayTreeRoot.type][
-                    "AvoidNode"
-                ],
+                this.state.avoidedNodes,
                 this.props.configDiagramDisplay[displayTreeRoot.type][
                     "AvoidLink"
                 ]
@@ -260,6 +298,8 @@ class Mapper extends Component {
             views,
             treeData,
             treeConfig,
+            avoidableNodes,
+            avoidedNodes,
         } = this.state;
 
         return (
@@ -277,6 +317,9 @@ class Mapper extends Component {
                     views={views}
                     selectedView={selectedView}
                     onSelectView={this.handleSelectView}
+                    avoidableNodes={avoidableNodes}
+                    avoidedNodes={avoidedNodes}
+                    onToggleAvoidNode={this.handleToggleAvoidNode}
                 />
                 <div className="m-2"></div>
                 <Toast

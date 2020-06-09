@@ -56,15 +56,15 @@ class Menu extends Component {
     }
 
     onSelectFile() {
-        this.setState({showFileLoader: true});
+        this.setState({ showFileLoader: true });
     }
 
     handleFileLoaderClose = () => {
-        this.setState({showFileLoader: false});
+        this.setState({ showFileLoader: false });
     };
 
     handleFileLoaderSelect = (selectedFile) => {
-        this.setState({showFileLoader: false});
+        this.setState({ showFileLoader: false });
 
         const fileDOM = this.fileLoaderRef.current;
         if (!fileDOM) return;
@@ -74,12 +74,17 @@ class Menu extends Component {
 
         let reader = new FileReader();
         reader.onprocess = this.props.onLoadedData;
-        reader.onload = function(evt) {
+        reader.onload = function (evt) {
             console.log("Loaded data from file " + selected.name);
             this.onprocess(selected.name, evt.target.result);
         };
-        reader.onerror = function(evt) {
-            console.error("Failed to load data from file" + selected.name + ":" + evt.target.error.name);
+        reader.onerror = function (evt) {
+            console.error(
+                "Failed to load data from file" +
+                    selected.name +
+                    ":" +
+                    evt.target.error.name
+            );
         };
         reader.readAsText(selected);
     };
@@ -99,6 +104,9 @@ class Menu extends Component {
             views,
             selectedView,
             onSelectView,
+            avoidableNodes,
+            avoidedNodes,
+            onToggleAvoidNode,
         } = this.props;
 
         return (
@@ -108,20 +116,30 @@ class Menu extends Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <NavDropdown title="Load" id="basic-nav-dropdown">
+                            <NavDropdown title="Load">
                                 <NavDropdown.Item>Refresh</NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item onClick={() => onViewXml()} disabled={!dataAvailable}>View XML</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => onSaveXml()} disabled={!dataAvailable}>Save XML</NavDropdown.Item>
+                                <NavDropdown.Item
+                                    onClick={() => onViewXml()}
+                                    disabled={!dataAvailable}
+                                >
+                                    View XML
+                                </NavDropdown.Item>
+                                <NavDropdown.Item
+                                    onClick={() => onSaveXml()}
+                                    disabled={!dataAvailable}
+                                >
+                                    Save XML
+                                </NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item onClick={() => this.onSelectFile()} disabled={this.state.showFileLoader}>
+                                <NavDropdown.Item
+                                    onClick={() => this.onSelectFile()}
+                                    disabled={this.state.showFileLoader}
+                                >
                                     From file...
                                 </NavDropdown.Item>
                             </NavDropdown>
-                            <NavDropdown
-                                title="Display"
-                                id="basic-nav-dropdown"
-                            >
+                            <NavDropdown title="Display">
                                 <NavDropdown.Item
                                     id="togglePhysics"
                                     onClick={() => onTogglePhysics()}
@@ -137,6 +155,22 @@ class Menu extends Component {
                                     {this.render_checkbox(settings.show_all)}
                                     <span>&nbsp; Show All</span>
                                 </NavDropdown.Item>
+                            </NavDropdown>
+                            <NavDropdown
+                                title="Hide"
+                                disabled={
+                                    avoidableNodes.length < 1 ? true : false
+                                }
+                            >
+                                {avoidableNodes.map((avoidableNode) => (
+                                    <NavDropdown.Item
+                                        key={"avoid_" + avoidableNode}
+                                        onClick={() => onToggleAvoidNode(avoidableNode)}
+                                    >
+                                        {this.render_checkbox(avoidedNodes.includes(avoidableNode))}
+                                        <span>&nbsp; {avoidableNode}</span>
+                                    </NavDropdown.Item>
+                                ))}
                             </NavDropdown>
                         </Nav>
                         <DropdownButton
