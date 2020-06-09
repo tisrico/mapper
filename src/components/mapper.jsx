@@ -4,11 +4,10 @@ import vis from "vis";
 import "vis/dist/vis-network.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
-import { Modal, Spinner } from "react-bootstrap";
 
 import TreeView from "./treeView";
 import Menu from "./menu";
-import ModalSpinner from "./modalSpinner"
+import ModalSpinner from "./modalSpinner";
 import "./css/mapper.css";
 
 class Mapper extends Component {
@@ -18,7 +17,7 @@ class Mapper extends Component {
             show_all: false,
         },
 
-        showProgress: false,
+        showSpinner: false,
 
         views: [],
         selectedView: null,
@@ -44,8 +43,7 @@ class Mapper extends Component {
         const settings = { ...this.state.settings };
         settings.show_all = !settings.show_all;
 
-        if (settings.show_all)
-            this.showProgress(true);
+        if (settings.show_all) this.showSpinner(true);
 
         this.state.settings.show_all = settings.show_all;
         this.setState({ settings });
@@ -53,8 +51,44 @@ class Mapper extends Component {
         this.showNetwork();
     };
 
-    handleLoadedData = (xmlData) => {
-        if (this.loadedXmlData(xmlData)) this.showNetwork();
+    handleLoadedData = (xmlFilename, xmlData) => {
+        if (this.loadedXmlData(xmlFilename, xmlData)) this.showNetwork();
+    };
+
+    handleViewXml = () => {
+        const tagsToReplace = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+        };
+
+        var reference = window.open("Booking.xml", "Booking XML");
+        reference.document.write(
+            "<pre>" +
+                (this.xmlData ? this.xmlData : "").replace(/[&<>]/g, (tag) => {
+                    return tagsToReplace[tag] || tag;
+                }) +
+            "</pre>"
+        );
+        reference.document.close();
+    };
+
+    handleSaveXml = () => {
+        var element = document.createElement("a");
+        element.setAttribute(
+            "href",
+            "data:text/xml;charset=utf-8," +
+                encodeURIComponent(this.xmlData ? this.xmlData : "")
+        );
+        element.setAttribute(
+            "download",
+            this.xmlFilename ? this.xmlFilename : "data.xml"
+        );
+
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
     };
 
     handleSelectView = (view) => {
@@ -73,22 +107,24 @@ class Mapper extends Component {
     };
 
     handleAfterDrawing = (visCanvas) => {
-        this.showProgress(false);
+        this.showSpinner(false);
     };
 
-    showProgress(newState) {
-        if (newState === this.state.showProgress) return;
+    showSpinner(newState) {
+        if (newState === this.state.showSpinner) return;
 
-        this.setState({ showProgress: newState });
+        this.setState({ showSpinner: newState });
     }
 
-    loadedXmlData(xmlData) {
-        this.showProgress(true);
+    loadedXmlData(xmlFilename, xmlData) {
+        this.showSpinner(true);
         let t0 = performance.now();
 
+        this.xmlFilename = xmlFilename;
+        this.xmlData = xmlData;
         this.diagram = new this.props.diagramClass();
         if (!this.diagram.parseXml(xmlData)) {
-            this.showProgress(false);
+            this.showSpinner(false);
             return false;
         }
 
@@ -205,7 +241,7 @@ class Mapper extends Component {
     render() {
         const {
             settings,
-            showProgress,
+            showSpinner,
             selectedView,
             views,
             treeData,
@@ -214,11 +250,14 @@ class Mapper extends Component {
 
         return (
             <div>
-                <ModalSpinner show={showProgress} />
+                <ModalSpinner show={showSpinner} />
                 <Menu
                     title={this.props.mode + " Mapper"}
                     settings={settings}
+                    dataAvailable={this.xmlData ? true : false}
                     onLoadedData={this.handleLoadedData}
+                    onViewXml={this.handleViewXml}
+                    onSaveXml={this.handleSaveXml}
                     onTogglePhysics={this.handleTogglePhysics}
                     onToggleShowAll={this.handleToggleShowAll}
                     views={views}

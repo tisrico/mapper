@@ -76,7 +76,7 @@ class Menu extends Component {
         reader.onprocess = this.props.onLoadedData;
         reader.onload = function(evt) {
             console.log("Loaded data from file " + selected.name);
-            this.onprocess(evt.target.result);
+            this.onprocess(selected.name, evt.target.result);
         };
         reader.onerror = function(evt) {
             console.error("Failed to load data from file" + selected.name + ":" + evt.target.error.name);
@@ -91,6 +91,9 @@ class Menu extends Component {
     render() {
         const {
             settings,
+            dataAvailable,
+            onViewXml,
+            onSaveXml,
             onTogglePhysics,
             onToggleShowAll,
             views,
@@ -107,7 +110,9 @@ class Menu extends Component {
                         <Nav className="mr-auto">
                             <NavDropdown title="Load" id="basic-nav-dropdown">
                                 <NavDropdown.Item>Refresh</NavDropdown.Item>
-                                <NavDropdown.Item>View XML</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item onClick={() => onViewXml()} disabled={!dataAvailable}>View XML</NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => onSaveXml()} disabled={!dataAvailable}>Save XML</NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item onClick={() => this.onSelectFile()} disabled={this.state.showFileLoader}>
                                     From file...

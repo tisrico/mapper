@@ -7,7 +7,7 @@ class Model1Attr extends NetNodeAttribute {
     var data_int = parseInt(data, 10);
 
     var draw_data = super._drawPlainAttr(attrName, attrData);
-    if (data_int.toString() == data && data_int != 0)
+    if (data_int.toString() === data && data_int !== 0)
     {
       draw_data["children"] = [
         {"icon" : "jstree-file", "text": "bin: 0b" + data_int.toString(2)},
@@ -100,7 +100,7 @@ class Model1Interface extends Model1Node {
 
 class Model1EgressRewrite extends Model1Node {
   static parseXml(className, id, type, keyName, data, attrMap) {
-    if (data.children.length == 0)
+    if (data.children.length === 0)
       return null;
 
     /* Create nodes */
@@ -108,7 +108,7 @@ class Model1EgressRewrite extends Model1Node {
   }
 
   getDisplayName() {
-      return "<" + this.type + ">\n" + "EGRESS_REWRITE";
+      return ("<" + this.type + ">\n" + "EGRESS_REWRITE");
   }
 }
 
