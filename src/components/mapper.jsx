@@ -4,6 +4,7 @@ import vis from "vis";
 import "vis/dist/vis-network.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
+import { Toast } from "react-bootstrap";
 
 import TreeView from "./treeView";
 import Menu from "./menu";
@@ -16,6 +17,9 @@ class Mapper extends Component {
             physics: this.props.configVisDisplay.physics.enabled,
             show_all: false,
         },
+
+        showMsg: false,
+        msgData: "",
 
         showSpinner: false,
 
@@ -52,7 +56,10 @@ class Mapper extends Component {
     };
 
     handleLoadedData = (xmlFilename, xmlData) => {
-        if (this.loadedXmlData(xmlFilename, xmlData)) this.showNetwork();
+        if (this.loadedXmlData(xmlFilename, xmlData)) {
+            this.showNetwork();
+            this.showMsg("Loaded XML data from " + xmlFilename + ".");
+        }
     };
 
     handleViewXml = () => {
@@ -102,13 +109,9 @@ class Mapper extends Component {
         if (selected) this.showNetworkInfo([selected.drawAttr()]);
     };
 
-    handleDeselectNode = (visNetworkObj) => {
-        this.showNetworkInfo(null);
-    };
-
-    handleAfterDrawing = (visCanvas) => {
-        this.showSpinner(false);
-    };
+    showMsg(message) {
+        this.setState({ showMsg: true, msgData: message });
+    }
 
     showSpinner(newState) {
         if (newState === this.state.showSpinner) return;
@@ -125,6 +128,7 @@ class Mapper extends Component {
         this.diagram = new this.props.diagramClass();
         if (!this.diagram.parseXml(xmlData)) {
             this.showSpinner(false);
+            this.showMsg("Failed to parse XML data in " + this.xmlFilename);
             return false;
         }
 
@@ -163,6 +167,7 @@ class Mapper extends Component {
             views: views,
             selectedView: views[0],
         });
+
         return true;
     }
 
@@ -204,9 +209,16 @@ class Mapper extends Component {
         config.physics.enabled = this.state.settings.physics;
 
         this.visNetwork = new vis.Network(container, data, config);
-        this.visNetwork.on("selectNode", this.handleSelectNode);
-        this.visNetwork.on("deselectNode", this.handleDeselectNode);
-        this.visNetwork.on("afterDrawing", this.handleAfterDrawing);
+        this.visNetwork.on("selectNode", (visNetworkObj) => {
+            let selected = this.diagram.getNode(visNetworkObj.nodes[0]);
+            if (selected) this.showNetworkInfo([selected.drawAttr()]);
+        });
+        this.visNetwork.on("deselectNode", (visNetworkObj) => {
+            this.showNetworkInfo(null);
+        });
+        this.visNetwork.on("afterDrawing", () => {
+            this.showSpinner(false);
+        });
 
         let t1 = performance.now();
         this.displayInfo = {
@@ -241,6 +253,8 @@ class Mapper extends Component {
     render() {
         const {
             settings,
+            showMsg,
+            msgData,
             showSpinner,
             selectedView,
             views,
@@ -265,6 +279,28 @@ class Mapper extends Component {
                     onSelectView={this.handleSelectView}
                 />
                 <div className="m-2"></div>
+                <Toast
+                    onClose={() => {
+                        this.setState({ showMsg: false });
+                    }}
+                    show={showMsg}
+                    delay={3000}
+                    autohide
+                    style={{
+                        position: "absolute",
+                        top: "30px",
+                        left: "50%",
+                        marginRight: "-50%",
+                        transform: "translate(-50%, 0)",
+                    }}
+                >
+                    <Toast.Header>
+                        <strong className="mr-auto">
+                            {this.props.mode + " Mapper"}
+                        </strong>
+                    </Toast.Header>
+                    <Toast.Body>{msgData}</Toast.Body>
+                </Toast>
                 <Split
                     sizes={[75, 25]}
                     minSize={[480, 240]}
