@@ -4,9 +4,20 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+var path = require('path');
+var basename = path.basename(window.location.pathname);
+
+/* Use OMCI by default */
+var app_mode = "OMCI";
+
+if (basename.includes("omci"))
+    app_mode = "OMCI";
+else if (basename.includes("model1"))
+    app_mode = "Model1";
+
 ReactDOM.render(
   <React.StrictMode>
-    <App mode="OMCI"/>
+    <App mode={app_mode}/>
   </React.StrictMode>,
   document.getElementById('root')
 );
