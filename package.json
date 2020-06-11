@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cd ./build && cp index.html model1_mapper.html && cp index.html omci_mapper.html",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

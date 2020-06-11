@@ -19,6 +19,7 @@ class Mapper extends Component {
         },
 
         showMsg: false,
+        autoHideMsg: true,
         msgData: "",
 
         showSpinner: false,
@@ -133,8 +134,13 @@ class Mapper extends Component {
         if (selected) this.showNetworkInfo([selected.drawAttr()]);
     };
 
-    showMsg(message) {
-        this.setState({ showMsg: true, msgData: message });
+    showMsg(message, autoHideMsg) {
+        let hide = true;
+
+        if (autoHideMsg != undefined)
+            hide = autoHideMsg ? true : false;
+
+        this.setState({ showMsg: true, msgData: message, autoHideMsg: hide });
     }
 
     showSpinner(newState) {
@@ -146,6 +152,8 @@ class Mapper extends Component {
     startRequestXmlData() {
         if (!this.props.dataRequestFunc)
             return;
+
+        this.showMsg("Retrieving data from server ...", false);
 
         this.props.dataRequestFunc(
             (xmlFilename, xmlData) => {
@@ -312,6 +320,7 @@ class Mapper extends Component {
         const {
             settings,
             showMsg,
+            autoHideMsg,
             msgData,
             showSpinner,
             selectedView,
@@ -349,7 +358,7 @@ class Mapper extends Component {
                     }}
                     show={showMsg}
                     delay={3000}
-                    autohide
+                    autohide={autoHideMsg}
                     style={{
                         position: "absolute",
                         top: "30px",
