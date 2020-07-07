@@ -1,13 +1,12 @@
 import requestData from "../netDataRequest";
 
 function Model1DataRequest(dataReadyHandler, errorHandler) {
-  requestData({"url": "dumppmadata.cmd"})
-  .then(response => {
-      if (dataReadyHandler)
-        dataReadyHandler("omcimib.xml", response);
-    }, errInfo => {
-      if (errorHandler)
-        errorHandler("Failed to dump Model1 data: " + errInfo);
+  requestData({ name: "Model1 data", url: "dumppmadata.cmd" })
+    .then((response) => {
+      dataReadyHandler && dataReadyHandler("pma_data.xml", response);
+    })
+    .catch((errInfo) => {
+      errorHandler && errorHandler("Model1DataRequest failed: " + errInfo);
     });
 }
 

@@ -1,22 +1,16 @@
 import requestData from "../netDataRequest";
 
 function OmciDataRequest(dataReadyHandler, errorHandler) {
-  requestData({"url": "/omcidump.cmd"})
-  .then(response => {
-    setTimeout(() => {
-      requestData({"url": "/omcimib.xml"})
-      .then(response => {
-        if (dataReadyHandler)
-          dataReadyHandler("omcimib.xml", response);
-      }, errInfo => {
-        if (errorHandler)
-          errorHandler("Failed to retrieve OMCI MIB data: " + errInfo);
-      });
-    }, 800);
-  }, errInfo => {
-    if (errorHandler)
-      errorHandler("Failed to dump OMCI MIB: " + errInfo);
-  });
+  requestData({ name: "OMCI dump", url: "/omcidump.cmd" })
+    .then((response) => {
+      requestData({ name: "OMCI data", url: "/omcimib.xml", delay: 800 });
+    })
+    .then((response) => {
+      dataReadyHandler && dataReadyHandler("omcimib.xml", response);
+    })
+    .catch((errInfo) => {
+      errorHandler && errorHandler("OmciDataRequest failed: " + errInfo);
+    });
 }
 
 export default OmciDataRequest;
