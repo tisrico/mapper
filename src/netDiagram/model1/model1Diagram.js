@@ -1,6 +1,6 @@
-import { NetNode, NetNodeAttribute, NetLink, NetDiagram } from "../netDiagram";
+import { NetXmlNode, NetXmlNodeAttribute, NetLink, NetDiagram } from "../netDiagram";
 
-class Model1Attr extends NetNodeAttribute {
+class Model1Attr extends NetXmlNodeAttribute {
   _drawPlainAttr(attrName, attrData)
   {
     var data = attrData.textContent.trim();
@@ -20,7 +20,7 @@ class Model1Attr extends NetNodeAttribute {
   }
 }
 
-class Model1Node extends NetNode {
+class Model1Node extends NetXmlNode {
   constructor(id, type, key, data, attrMap) {
       super(id, type, key, data, attrMap);
       this.defaultAttrClass = Model1Attr;

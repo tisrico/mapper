@@ -76,7 +76,8 @@ class Menu extends Component {
         reader.onprocess = this.props.onLoadedData;
         reader.onload = function (evt) {
             console.log("Loaded data from file " + selected.name);
-            this.onprocess(selected.name, evt.target.result);
+            let ext = selected.name.substr(selected.name.lastIndexOf('.') + 1);
+            this.onprocess(selected.name, ext.toLowerCase(), evt.target.result);
         };
         reader.onerror = function (evt) {
             console.error(
@@ -98,8 +99,8 @@ class Menu extends Component {
             settings,
             dataAvailable,
             onRefresh,
-            onViewXml,
-            onSaveXml,
+            onViewData,
+            onSaveData,
             onTogglePhysics,
             onToggleShowAll,
             views,
@@ -125,16 +126,16 @@ class Menu extends Component {
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item
-                                    onClick={() => onViewXml()}
+                                    onClick={() => onViewData()}
                                     disabled={!dataAvailable}
                                 >
-                                    View XML
+                                    View Data
                                 </NavDropdown.Item>
                                 <NavDropdown.Item
-                                    onClick={() => onSaveXml()}
+                                    onClick={() => onSaveData()}
                                     disabled={!dataAvailable}
                                 >
-                                    Save XML
+                                    Save Data
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item

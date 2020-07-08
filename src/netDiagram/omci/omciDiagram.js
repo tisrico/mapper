@@ -1,4 +1,4 @@
-import { NetNode, NetNodeAttribute, NetLink, NetDiagram } from "../netDiagram";
+import { NetXmlNode, NetXmlNodeAttribute, NetLink, NetDiagram } from "../netDiagram";
 import {
   MibAttrUtil,
   MibAttrVlanTaggingBehaviour,
@@ -7,7 +7,7 @@ import {
   MibAttrForwardOption,
 } from "./omciAttribute.js";
 
-class OmciMibAttr extends NetNodeAttribute {
+class OmciMibAttr extends NetXmlNodeAttribute {
   _drawPlainAttr(attrName, attrData) {
     let data = attrData.textContent.trim();
     let data_int = parseInt(data, 10);
@@ -204,7 +204,7 @@ class VlanTaggingBehaviourAttr extends OmciMibAttr {
   }
 }
 
-class OmciMib extends NetNode {
+class OmciMib extends NetXmlNode {
   constructor(id, type, key, data, attrMap) {
     super(id, type, key, data, attrMap);
     this.defaultAttrClass = OmciMibAttr;

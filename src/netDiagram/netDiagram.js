@@ -1,4 +1,5 @@
 import vis from "vis";
+import djson from "dirty-json";
 
 export class NetNodeAttribute {
   constructor(attrName, attrData) {
@@ -6,6 +7,15 @@ export class NetNodeAttribute {
     this.attrData = attrData;
   }
 
+  draw() {
+    return {
+      "icon" : "jstree-file",
+      "text": this.attrName,
+    };
+  }
+}
+
+export class NetXmlNodeAttribute extends NetNodeAttribute {
   _drawPlainAttr(attrName, attrData) {
       return {
         "icon" : "jstree-file",
@@ -38,30 +48,52 @@ export class NetNodeAttribute {
   }
 }
 
-export class NetNode {
-    static getXmlItemValue(xmlItem, entry) {
-      try { return xmlItem.getElementsByTagName(entry)[0].textContent; }
-      catch (err) { return null; }
-    }
-
-    static parseKey(key) {
-      return key;
-    }
-
-  static parseXml(className, id, type, keyName, data, attrMap) {
-    let key = 0;
-    if (keyName != null) {
-      key = className.getXmlItemValue(data, keyName);
-      if (key == null)
-          return null;
-    }
-
-    key = className.parseKey(key);
-
-    /* Create nodes */
-    return new className(id, type, key, data, attrMap);
+export class NetJsonNodeAttribute extends NetNodeAttribute {
+  _drawPlainAttr(attrName, attrData) {
+      return {
+        "icon" : "jstree-file",
+        "text": attrName + ": " + attrData.toString(),
+      };
   }
 
+  _draw(attrName, attrData) {
+    if (attrData instanceof Array) {
+      let info_list = [];
+      for (let i = 0; i < attrData.length; i++) {
+        let children = attrData[i];
+        info_list.push(this._draw("[" + i.toString() + "]", children));
+      }
+
+      return {
+        "icon": "jstree-file",
+        "text": attrName,
+        "state": { "opened" : true },
+        "children": info_list,
+      };
+    } else if (attrData instanceof Object) {
+      let info_list = [];
+      for (let key of Object.keys(attrData)) {
+        let children = attrData[key];
+        info_list.push(this._draw(key, children));
+      }
+
+      return {
+        "icon": "jstree-file",
+        "text": attrName,
+        "state": { "opened" : true },
+        "children": info_list,
+      };
+    } else {
+      return this._drawPlainAttr(attrName, attrData);
+    }
+  }
+
+  draw() {
+    return this._draw(this.attrName, this.attrData);
+  }
+}
+
+export class NetNode {
   constructor(id, type, key, data, attrMap) {
     this.id = id; // Unique node ID
 
@@ -77,7 +109,7 @@ export class NetNode {
   }
 
   getDisplayName() {
-    return this.type + " " + this.key;
+    return this.key;
   }
 
   _getAttrClass(attrName) {
@@ -88,16 +120,6 @@ export class NetNode {
   }
 
   draw() {
-    // parse attrs (only when it is being drawed)
-    if (this.attributes == null) {
-      this.attributes = [];
-      for (let i = 0; i < this.data.children.length; i++) {
-        let children = this.data.children[i];
-        let attrClass = this._getAttrClass(children.tagName);
-        this.attributes.push(new attrClass(children.tagName, children));
-      }
-    }
-
     return {
       id: this.id,
       label: this.getDisplayName(),
@@ -121,6 +143,101 @@ export class NetNode {
       "state": { "opened" : true },
       "children": info_list,
     };
+  }
+
+  loadLinkPointer(data, linkDesc) {
+    return null;
+  }
+
+  loadLinkPointerType(data, linkDesc) {
+    return null;
+  }
+
+  loadLinkInfo() {
+    return null;
+  }
+}
+
+export class NetJsonNode extends NetNode {
+  static parseJson(className, id, type, key, data, attrMap) {
+    return new className(id, type, key, data, attrMap);
+  }
+
+  constructor(id, type, key, data, attrMap) {
+    super(id, type, key, data, attrMap);
+    this.defaultAttrClass = NetJsonNodeAttribute;
+  }
+
+  _getAttrClass(attrName) {
+    let match = attrName.match(/^(.+)\[.+\]$/);
+    if (match) {
+      attrName = match[1];
+    }
+
+    if (this.attrMap && this.attrMap[attrName])
+      return this.attrMap[attrName];
+    else
+      return this.defaultAttrClass;
+  }
+
+  drawAttr() {
+    if (this.attributes == null && this.data != null) {
+      this.attributes = [];
+      for (let key of Object.keys(this.data)) {
+        let children = this.data[key];
+        let attrClass = this._getAttrClass(key);
+        this.attributes.push(new attrClass(key, children));
+      }
+    }
+
+    return super.drawAttr();
+  }
+}
+
+export class NetXmlNode extends NetNode {
+  static getXmlItemValue(xmlItem, entry) {
+    try { return xmlItem.getElementsByTagName(entry)[0].textContent; }
+    catch (err) { return null; }
+  }
+
+  static parseKey(key) {
+    return key;
+  }
+
+  static parseXml(className, id, type, keyName, data, attrMap) {
+    let key = 0;
+    if (keyName != null) {
+      key = className.getXmlItemValue(data, keyName);
+      if (key == null)
+          return null;
+    }
+
+    key = className.parseKey(key);
+
+    /* Create nodes */
+    return new className(id, type, key, data, attrMap);
+  }
+
+  constructor(id, type, key, data, attrMap) {
+    super(id, type, key, data, attrMap);
+    this.defaultAttrClass = NetXmlNodeAttribute;
+  }
+
+  getDisplayName() {
+    return this.type + " " + this.key;
+  }
+
+  drawAttr() {
+    if (this.attributes == null && this.data != null) {
+      this.attributes = [];
+      for (let i = 0; i < this.data.children.length; i++) {
+        let children = this.data.children[i];
+        let attrClass = this._getAttrClass(children.tagName);
+        this.attributes.push(new attrClass(children.tagName, children));
+      }
+    }
+
+    return super.drawAttr();
   }
 
   _loadPointers(data, pointerFromNameList, pointerList) {
@@ -227,7 +344,7 @@ export class NetNode {
         let link_info_item = {
             pointer_from_name: linkDesc.PointerFromName,
             pointer_to_name: linkDesc.PointerToName,
-            pointer_type: NetNode._splitLinkPointerType(pointer_type),
+            pointer_type: NetXmlNode._splitLinkPointerType(pointer_type),
             pointer_list: pointerList,
         };
         if (linkDesc.PointerNote != null)
@@ -270,9 +387,9 @@ export class ParentLink extends NetLink {
 }
 
 export class NetDiagram {
-  constructor(xmlTemplate, xmlItemKeyName) {
-    this.xmlTemplate = xmlTemplate;
-    this.xmlItemKeyName = xmlItemKeyName;
+  constructor(dataTemplate, dataItemKeyName) {
+    this.dataTemplate = dataTemplate;
+    this.dataItemKeyName = dataItemKeyName;
 
     this.node_count = 0;
     this.nodes = {};
@@ -354,7 +471,7 @@ export class NetDiagram {
   drawNodeTree(startNodeType, startNodeKey, avoidNodeInfo, avoidLinkInfo) {
       let data = { nodes: new vis.DataSet([]), edges: new vis.DataSet([]) };
       let visitedNodes = {};
-      return this._drawNodeTree(data, this.findNode(startNodeType, this.xmlItemKeyName, startNodeKey),
+      return this._drawNodeTree(data, this.findNode(startNodeType, this.dataItemKeyName, startNodeKey),
               visitedNodes, avoidNodeInfo, avoidLinkInfo);
   }
 
@@ -378,27 +495,61 @@ export class NetDiagram {
   }
 
   _getNodeClass(templateInfo) {
-    if (templateInfo.NodeClass)
-      return templateInfo.NodeClass;
-    else
-      return this.defaultNodeClass;
+    return templateInfo.NodeClass || this.defaultNodeClass;
   }
 
   _getLinkClass(templateInfo) {
-    if (templateInfo.LinkClass)
-      return templateInfo.LinkClass;
-    else
-      return this.defaultLinkCLass;
+    return templateInfo.LinkClass || this.defaultLinkCLass;
   }
 
   _getNextNodeId() {
     return this.node_count + 1;
   }
 
-  createNode(parent, itemClass, itemType, itemData, templateInfo) {
+  createJsonNode(parent, itemClass, itemType, itemKey, itemData, templateInfo) {
+    /* Create nodes */
+    let new_node = itemClass.parseJson(itemClass, 0, itemType, itemKey, itemData, templateInfo["AttrMap"]);
+    if (new_node == null)
+      return null;
+
+    new_node.templateInfo = templateInfo;
+    new_node.parent = parent;
+
+    let new_node_list = [new_node];
+
+    if (templateInfo["ChildNode"]) {
+      for (let childType in templateInfo["ChildNode"]) {
+        // if (!itemData[childType])
+        //   continue;
+
+        let nodeClass = this._getNodeClass(templateInfo["ChildNode"][childType]);
+        for (let key of Object.keys(itemData)) {
+
+          let realKey = key;
+          let match = realKey.match(/^(.+)\[.+\]$/);
+          if (match) {
+            realKey = match[1];
+          }
+
+          if (realKey !== childType)
+            continue;
+
+          let newNodeList = this.createJsonNode(new_node, nodeClass, childType, key, itemData[key], templateInfo["ChildNode"][childType]);
+          if (newNodeList == null || newNodeList.length === 0)
+              continue;
+
+          new_node_list = new_node_list.concat(newNodeList);
+        }
+      }
+    }
+
+    return new_node_list;
+  }
+
+  createXmlNode(parent, itemClass, itemType, itemData, templateInfo) {
     /* Create nodes */
     let new_node = itemClass.parseXml(itemClass, 0, itemType,
-                                  this.xmlItemKeyName, itemData, templateInfo["AttrMap"]);
+                                  this.dataItemKeyName, itemData, templateInfo["AttrMap"]);
     if (new_node == null)
       return null;
 
@@ -413,7 +564,7 @@ export class NetDiagram {
         if (childItems) {
           for (let i = 0; i < childItems.length; i++) {
             let nodeClass = this._getNodeClass(templateInfo["ChildNode"][childType]);
-            let newNodeList = this.createNode(new_node, nodeClass, childType, childItems.item(i), templateInfo["ChildNode"][childType]);
+            let newNodeList = this.createXmlNode(new_node, nodeClass, childType, childItems.item(i), templateInfo["ChildNode"][childType]);
             if (newNodeList == null || newNodeList.length === 0)
               continue;
 
@@ -433,6 +584,65 @@ export class NetDiagram {
     return this.node_list[id - 1];
   }
 
+  parseJson(jsonString) {
+    if (jsonString == null)
+      return false;
+
+    console.log("start parsing JSON!");
+
+    let jsonObj = null;
+    try {
+      jsonObj = djson.parse(jsonString);
+      // jsonObj = JSON.parse('{"gem":{}}');
+    } catch(error) {
+      console.error(error);
+      return false;
+    }
+
+    if (typeof(jsonObj) !== 'object')
+      return false;
+
+    for (let itemType of Object.keys(this.dataTemplate)) {
+      this.nodes[itemType] = [];
+
+      if (!jsonObj[itemType])
+        continue;
+
+      for (let key of Object.keys(jsonObj[itemType])) {
+        let nodeClass = this._getNodeClass(this.dataTemplate[itemType]);
+        let newNodeList = this.createJsonNode(null, nodeClass, itemType,
+                              key, jsonObj[itemType][key], this.dataTemplate[itemType]);
+        if (newNodeList == null)
+            continue;
+
+        for (let j = 0; j < newNodeList.length; j++) {
+          let curr_new_node = newNodeList[j];
+          let curr_type = curr_new_node.type;
+
+          curr_new_node.id = this._getNextNodeId();
+
+          if (this.nodes[curr_type] == null)
+            this.nodes[curr_type] = [];
+
+          this.nodes[curr_type].push(curr_new_node);
+          this.node_list.push(curr_new_node);
+          this.node_count++;
+
+          // /* Link info to nodes needs to be 1:1 */
+          // if (link_info[curr_type] == null)
+          //   link_info[curr_type] = [];
+
+          // let tmp = curr_new_node.loadLinkInfo();
+          // link_info[curr_type].push(tmp);
+        }
+      }
+    }
+
+    console.log(this.nodes);
+
+    return true;
+  }
+
   parseXml(xmlString) {
     if (xmlString == null)
       return false;
@@ -443,7 +653,7 @@ export class NetDiagram {
     let link_info = {};
 
     /* Parse info from XML, create nodes and record link info */
-    for (let itemType in this.xmlTemplate) {
+    for (let itemType in this.dataTemplate) {
       let items = xmlDoc.getElementsByTagName(itemType);
       if (items)
       {
@@ -452,9 +662,9 @@ export class NetDiagram {
         for (let i = 0; i < items.length; i++)
         {
           /* Get node class */
-          let nodeClass = this._getNodeClass(this.xmlTemplate[itemType]);
-          let newNodeList = this.createNode(null, nodeClass, itemType,
-                                items.item(i), this.xmlTemplate[itemType]);
+          let nodeClass = this._getNodeClass(this.dataTemplate[itemType]);
+          let newNodeList = this.createXmlNode(null, nodeClass, itemType,
+                                items.item(i), this.dataTemplate[itemType]);
           if (newNodeList == null)
             continue;
 

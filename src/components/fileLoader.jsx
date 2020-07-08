@@ -10,7 +10,7 @@ export class FileLoader extends Component {
         return (
             <Modal show={show} onHide={onClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Load OMCI MIB File</Modal.Title>
+                    <Modal.Title>Load Data File</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>

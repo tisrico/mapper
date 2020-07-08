@@ -14,6 +14,8 @@ if (basename.includes("omci"))
     app_mode = "OMCI";
 else if (basename.includes("model1"))
     app_mode = "Model1";
+else if (basename.includes("rdp"))
+    app_mode = "RDP";
 
 ReactDOM.render(
   <React.StrictMode>

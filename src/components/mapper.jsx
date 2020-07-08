@@ -36,7 +36,7 @@ class Mapper extends Component {
 
     componentDidMount() {
         this.visNetworkRef = React.createRef();
-        this.startRequestXmlData();
+        this.startRequestData();
     }
 
     handleTogglePhysics = () => {
@@ -61,27 +61,27 @@ class Mapper extends Component {
     };
 
     handleRefreshData = () => {
-        this.startRequestXmlData();
+        this.startRequestData();
     }
 
-    handleLoadedData = (xmlFilename, xmlData) => {
-        if (this.loadedXmlData(xmlFilename, xmlData)) {
+    handleLoadedData = (dataFilename, format, data) => {
+        if (this.loadedData(dataFilename, format, data)) {
             this.showNetwork();
-            this.showMsg("Loaded XML data from file " + xmlFilename + ".");
+            this.showMsg(`Loaded ${format} data from file ${dataFilename}.`);
         }
     };
 
-    handleViewXml = () => {
+    handleViewData = () => {
         const tagsToReplace = {
             "&": "&amp;",
             "<": "&lt;",
             ">": "&gt;",
         };
 
-        var reference = window.open("Booking.xml", "Booking XML");
+        var reference = window.open(this.dataFilename || "Data file", this.format || "data");
         reference.document.write(
             "<pre>" +
-                (this.xmlData ? this.xmlData : "").replace(/[&<>]/g, (tag) => {
+                (this.data ? this.data : "").replace(/[&<>]/g, (tag) => {
                     return tagsToReplace[tag] || tag;
                 }) +
                 "</pre>"
@@ -89,16 +89,16 @@ class Mapper extends Component {
         reference.document.close();
     };
 
-    handleSaveXml = () => {
+    handleSaveData = () => {
         var element = document.createElement("a");
         element.setAttribute(
             "href",
-            "data:text/xml;charset=utf-8," +
-                encodeURIComponent(this.xmlData ? this.xmlData : "")
+            `data:text/${this.format};charset=utf-8,` +
+                encodeURIComponent(this.data ? this.data : "")
         );
         element.setAttribute(
             "download",
-            this.xmlFilename ? this.xmlFilename : "data.xml"
+            this.dataFilename ? this.dataFilename : `data.${this.format}`
         );
 
         element.style.display = "none";
@@ -149,33 +149,36 @@ class Mapper extends Component {
         this.setState({ showSpinner: newState });
     }
 
-    startRequestXmlData() {
+    startRequestData() {
         if (!this.props.dataRequestFunc)
             return;
 
         this.showMsg("Retrieving data from server ...", false);
 
         this.props.dataRequestFunc(
-            (xmlFilename, xmlData) => {
-                if (this.loadedXmlData(xmlFilename, xmlData)) {
+            (dataFilename, format, data) => {
+                if (this.loadedData(dataFilename, format, data)) {
                     this.showNetwork();
-                    this.showMsg("Retrieved XML data " + xmlFilename + ".");
+                    this.showMsg(`Retrieved ${format} data ${dataFilename}.`);
                 }
             },
             (message) => {this.showMsg(message)}
         );
     }
 
-    loadedXmlData(xmlFilename, xmlData) {
+    loadedData(dataFilename, format, data) {
         this.showSpinner(true);
         let t0 = performance.now();
 
-        this.xmlFilename = xmlFilename;
-        this.xmlData = xmlData;
+        this.dataFilename = dataFilename;
+        this.format = format;
+        this.data = data;
         this.diagram = new this.props.diagramClass();
-        if (!this.diagram.parseXml(xmlData)) {
+
+        let res = (format === "json") ? this.diagram.parseJson(data) : this.diagram.parseXml(data);
+        if (!res) {
             this.showSpinner(false);
-            this.showMsg("Failed to parse XML data in " + this.xmlFilename);
+            this.showMsg(`Failed to parse ${format} data in ${this.dataFilename}`);
             return false;
         }
 
@@ -337,11 +340,11 @@ class Mapper extends Component {
                 <Menu
                     title={this.props.mode + " Mapper"}
                     settings={settings}
-                    dataAvailable={this.xmlData ? true : false}
+                    dataAvailable={this.data ? true : false}
                     onRefresh={this.handleRefreshData}
                     onLoadedData={this.handleLoadedData}
-                    onViewXml={this.handleViewXml}
-                    onSaveXml={this.handleSaveXml}
+                    onViewData={this.handleViewData}
+                    onSaveData={this.handleSaveData}
                     onTogglePhysics={this.handleTogglePhysics}
                     onToggleShowAll={this.handleToggleShowAll}
                     views={views}

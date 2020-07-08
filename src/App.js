@@ -18,6 +18,14 @@ import {
   Model1ConfigJsTreeDisplay,
 } from "./netDiagram/model1/model1Config";
 
+import RdpDataRequest from "./netDiagram/rdp/rdpDataRequest";
+import RdpDiagram from "./netDiagram/rdp/rdpDiagram";
+import {
+  RdpConfigDiagramDisplay,
+  RdpConfigVisDisplay,
+  RdpConfigJsTreeDisplay,
+} from "./netDiagram/rdp/rdpConfig";
+
 function App(props) {
   let mode = props.mode;
   let dataRequestFunc = null;
@@ -38,6 +46,12 @@ function App(props) {
     configVisDisplay = Model1ConfigVisDisplay;
     configJsTreeDisplay = Model1ConfigJsTreeDisplay;
     configDiagramDisplay = Model1ConfigDiagramDisplay;
+  } else if (mode === "RDP") {
+    dataRequestFunc = RdpDataRequest;
+    diagramClass = RdpDiagram;
+    configVisDisplay = RdpConfigVisDisplay;
+    configJsTreeDisplay = RdpConfigJsTreeDisplay;
+    configDiagramDisplay = RdpConfigDiagramDisplay;
   } else {
     return <main className="container-fluid">Unsupported mode {mode}</main>;
   }
