@@ -1,5 +1,11 @@
 export var RdpConfigDiagramDisplay = {
-
+  port: {
+    AvoidableNode: [ "queue_cfg", "vlan_action" ],
+    AvoidLink: {
+      flow: "port",
+      gem: "flow",
+    },
+  },
 };
 
 export var RdpConfigVisDisplay = {

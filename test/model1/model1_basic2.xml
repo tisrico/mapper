@@ -1,0 +1,508 @@
+<config>
+  <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+    <interface>
+      <name>UNI-1</name>
+      <description>Port 1</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>UNI-2</name>
+      <description>Port 2</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>UNI-3</name>
+      <description>Port 3</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>UNI-4</name>
+      <description>Port 4</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>UNI-5</name>
+      <description>Port 5</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>UNI-6</name>
+      <description>Port 6</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>UNI-7</name>
+      <description>Port 7</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>UNI-8</name>
+      <description>Port 8</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:fastdsl</type>
+      <enabled>true</enabled>
+      <line xmlns="urn:bbf:yang:bbf-fastdsl">
+        <configured-mode>mode-vdsl</configured-mode>
+        <line xmlns="urn:bbf:yang:bbf-vdsl">
+          <test-mode>
+            <power-management-state-forced>4</power-management-state-forced>
+            <loop-diagnostics-mode-forced>2</loop-diagnostics-mode-forced>
+            <auto-mode-cold-start-forced>0</auto-mode-cold-start-forced>
+          </test-mode>
+          <channel>
+            <downstream-data-rate-profile>datarate_profile_ds</downstream-data-rate-profile>
+            <upstream-data-rate-profile>datarate_profile_us</upstream-data-rate-profile>
+            <impulse-noise-protection-delay-profile>noise_protection_profile</impulse-noise-protection-delay-profile>
+          </channel>
+          <line-spectrum-profile>spectrum_profile</line-spectrum-profile>
+          <upstream-power-back-off-profile>upbo_profile</upstream-power-back-off-profile>
+          <downstream-power-back-off-profile>dpbo_profile</downstream-power-back-off-profile>
+          <radio-frequency-interference-profile>rf_interference_profile</radio-frequency-interference-profile>
+          <noise-margin-profile>noise_profile_balanced</noise-margin-profile>
+          <threshold-template>default</threshold-template>
+          <xtu-c>
+            <update-test-ne>0</update-test-ne>
+          </xtu-c>
+          <xtu-r>
+            <update-test-fe>0</update-test-fe>
+          </xtu-r>
+        </line>
+      </line>
+    </interface>
+    <interface>
+      <name>PTM.UNI-1</name>
+      <description>PTM interface of UNI Port 1</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-1</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>PTM.UNI-2</name>
+      <description>PTM interface of UNI Port 2</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-2</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>PTM.UNI-3</name>
+      <description>PTM interface of UNI Port 3</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-3</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>PTM.UNI-4</name>
+      <description>PTM interface of UNI Port 4</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-4</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>PTM.UNI-5</name>
+      <description>PTM interface of UNI Port 5</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-5</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>PTM.UNI-6</name>
+      <description>PTM interface of UNI Port 6</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-6</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>PTM.UNI-7</name>
+      <description>PTM interface of UNI Port 7</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-7</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>PTM.UNI-8</name>
+      <description>PTM interface of UNI Port 8</description>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ptm</type>
+      <enabled>true</enabled>
+      <ptm xmlns="urn:bbf:yang:bbf-ptm">
+        <lower-layer-if>UNI-8</lower-layer-if>
+      </ptm>
+    </interface>
+    <interface>
+      <name>VEIP-1</name>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ethernetCsmacd</type>
+      <enabled>true</enabled>
+      <description>veip0</description>
+    </interface>
+    <interface>
+      <name>VEIP-2</name>
+      <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ethernetCsmacd</type>
+      <enabled>true</enabled>
+      <description>veip1</description>
+    </interface>
+    <interface>
+      <name>V_SUB-1.1</name>
+      <type xmlns:bbfift="urn:bbf:yang:bbf-if-type">bbfift:vlan-sub-interface</type>
+      <enabled>true</enabled>
+      <description/>
+      <subif-lower-layer xmlns="urn:bbf:yang:bbf-sub-interfaces">
+        <interface>VEIP-1</interface>
+      </subif-lower-layer>
+      <inline-frame-processing xmlns="urn:bbf:yang:bbf-sub-interfaces">
+        <ingress-rule>
+          <rule>
+            <name>NCD_MDMGT</name>
+            <priority>1</priority>
+            <flexible-match>
+              <match-criteria xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+                <tag>
+                  <index>0</index>
+                  <dot1q-tag>
+                    <tag-type>any</tag-type>
+                    <vlan-id>4093</vlan-id>
+                    <pbit>4</pbit>
+                  </dot1q-tag>
+                </tag>
+              </match-criteria>
+            </flexible-match>
+            <ingress-rewrite>
+            </ingress-rewrite>
+          </rule>
+          <rule>
+            <name>USER_VLAN</name>
+            <priority>2</priority>
+            <flexible-match>
+              <match-criteria xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+                <tag>
+                  <index>0</index>
+                  <dot1q-tag>
+                    <tag-type>any</tag-type>
+                    <vlan-id>2771</vlan-id>
+                    <pbit>any</pbit>
+                  </dot1q-tag>
+                </tag>
+              </match-criteria>
+            </flexible-match>
+            <ingress-rewrite>
+              <push-tag xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+                <index>1</index>
+                <dot1q-tag>
+                  <tag-type xmlns:bbf-dot1qt="urn:bbf:yang:bbf-dot1q-types">bbf-dot1qt:c-vlan</tag-type>
+                  <vlan-id>2781</vlan-id>
+                  <pbit-from-tag-index>1</pbit-from-tag-index>
+                  <dei-from-tag-index>1</dei-from-tag-index>
+                </dot1q-tag>
+              </push-tag>
+              <push-tag xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+                <index>0</index>
+                <dot1q-tag>
+                  <tag-type xmlns:bbf-dot1qt="urn:bbf:yang:bbf-dot1q-types">bbf-dot1qt:c-vlan</tag-type>
+                  <vlan-id>vlan-id-from-tag-index</vlan-id>
+                  <vlan-id-from-tag-index-or-discard>1</vlan-id-from-tag-index-or-discard>
+                  <pbit-from-tag-index>1</pbit-from-tag-index>
+                  <dei-from-tag-index>1</dei-from-tag-index>
+                </dot1q-tag>
+              </push-tag>
+            </ingress-rewrite>
+          </rule>
+        </ingress-rule>
+        <egress-rewrite>
+          <push-tag xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+            <index>0</index>
+            <dot1q-tag>
+              <tag-type xmlns:bbf-dot1qt="urn:bbf:yang:bbf-dot1q-types">bbf-dot1qt:c-vlan</tag-type>
+              <vlan-id>2781</vlan-id>
+              <pbit-from-tag-index>0</pbit-from-tag-index>
+              <dei-from-tag-index>0</dei-from-tag-index>
+            </dot1q-tag>
+          </push-tag>
+        </egress-rewrite>
+      </inline-frame-processing>
+    </interface>
+    <interface>
+      <name>V_SUB-1.2</name>
+      <type xmlns:bbfift="urn:bbf:yang:bbf-if-type">bbfift:vlan-sub-interface</type>
+      <enabled>true</enabled>
+      <description/>
+      <subif-lower-layer xmlns="urn:bbf:yang:bbf-sub-interfaces">
+        <interface>PTM.UNI-1</interface>
+      </subif-lower-layer>
+      <inline-frame-processing xmlns="urn:bbf:yang:bbf-sub-interfaces">
+        <ingress-rule>
+          <rule>
+            <name>NCD_MDMGT</name>
+            <priority>1</priority>
+            <flexible-match>
+              <match-criteria xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+                <tag>
+                  <index>0</index>
+                  <dot1q-tag>
+                    <tag-type>any</tag-type>
+                    <vlan-id>4093</vlan-id>
+                    <pbit>4</pbit>
+                  </dot1q-tag>
+                </tag>
+              </match-criteria>
+            </flexible-match>
+            <ingress-rewrite>
+            </ingress-rewrite>
+          </rule>
+          <rule>
+            <name>USER_VLAN</name>
+            <priority>2</priority>
+            <flexible-match>
+              <match-criteria xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+                <tag>
+                  <index>0</index>
+                  <dot1q-tag>
+                    <tag-type>any</tag-type>
+                    <vlan-id>2781</vlan-id>
+                    <pbit>any</pbit>
+                  </dot1q-tag>
+                </tag>
+              </match-criteria>
+            </flexible-match>
+            <ingress-rewrite>
+              <push-tag xmlns="urn:bbf:yang:bbf-sub-interface-tagging">
+                <index>0</index>
+                <dot1q-tag>
+                  <tag-type xmlns:bbf-dot1qt="urn:bbf:yang:bbf-dot1q-types">bbf-dot1qt:c-vlan</tag-type>
+                  <vlan-id>2771</vlan-id>
+                  <pbit-from-tag-index>0</pbit-from-tag-index>
+                  <dei-from-tag-index>0</dei-from-tag-index>
+                </dot1q-tag>
+              </push-tag>
+            </ingress-rewrite>
+          </rule>
+        </ingress-rule>
+        <egress-rewrite>
+        </egress-rewrite>
+      </inline-frame-processing>
+    </interface>
+  </interfaces>
+  <forwarding xmlns="urn:bbf:yang:bbf-l2-forwarding">
+    <forwarders>
+      <forwarder>
+        <name>BRIDGE1</name>
+        <ports>
+          <port>
+            <name>PORT1</name>
+            <sub-interface>V_SUB-1.1</sub-interface>
+          </port>
+          <port>
+            <name>PORT2</name>
+            <sub-interface>V_SUB-1.2</sub-interface>
+          </port>
+        </ports>
+      </forwarder>
+    </forwarders>
+  </forwarding>
+</config>

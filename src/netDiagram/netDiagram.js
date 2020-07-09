@@ -1,99 +1,99 @@
 import vis from "vis";
 import djson from "dirty-json";
 
-export class NetNodeAttribute {
+class NetNodeAttribute {
   constructor(attrName, attrData) {
     this.attrName = attrName;
     this.attrData = attrData;
   }
 
-  draw() {
+  _drawAttrTree(attrName, attrChildren) {
     return {
-      "icon" : "jstree-file",
-      "text": this.attrName,
+        "icon": "jstree-file",
+        "text": attrName,
+        "state": { "opened" : true },
+        "children": attrChildren,
     };
+  }
+
+  _getAttrData(attrData) {
+    return attrData.toString();
+  }
+
+  _drawPlainAttr(attrName, attrData) {
+      return {
+        "icon" : "jstree-file",
+        "text": attrName + ": " + this._getAttrData(attrData),
+      };
+  }
+
+  _draw(attrName, attrData) {
+    return this._drawPlainAttr(this.attrName, this.attrData);
+  }
+
+  draw() {
+    return this._draw(this.attrName, this.attrData);
   }
 }
 
 export class NetXmlNodeAttribute extends NetNodeAttribute {
-  _drawPlainAttr(attrName, attrData) {
-      return {
-        "icon" : "jstree-file",
-        "text": attrName + ": " + attrData.textContent.trim(),
-      };
+  _getAttrData(attrData) {
+    return attrData.textContent.trim();
   }
 
   _draw(attrName, attrData) {
     if (attrData.children.length === 0) {
       return this._drawPlainAttr(attrName, attrData);
+    } else {
+      return this._drawAttrTree(attrName,
+        [...attrData.children].map(child => this._draw(child.tagName, child)));
     }
-    else {
-      let info_list = [];
-      for (let i = 0; i < attrData.children.length; i++) {
-        let children = attrData.children[i];
-        info_list.push(this._draw(children.tagName, children));
-      }
-
-      return {
-        "icon": "jstree-file",
-        "text": attrName,
-        "state": { "opened" : true },
-        "children": info_list,
-      };
-    }
-  }
-
-  draw() {
-    return this._draw(this.attrName, this.attrData);
   }
 }
 
 export class NetJsonNodeAttribute extends NetNodeAttribute {
-  _drawPlainAttr(attrName, attrData) {
-      return {
-        "icon" : "jstree-file",
-        "text": attrName + ": " + attrData.toString(),
-      };
+  _getAttrData(attrData) {
+    return attrData.toString();
   }
 
   _draw(attrName, attrData) {
     if (attrData instanceof Array) {
-      let info_list = [];
-      for (let i = 0; i < attrData.length; i++) {
-        let children = attrData[i];
-        info_list.push(this._draw("[" + i.toString() + "]", children));
-      }
-
-      return {
-        "icon": "jstree-file",
-        "text": attrName,
-        "state": { "opened" : true },
-        "children": info_list,
-      };
+      return this._drawAttrTree(attrName,
+        attrData.map((child, i) => this._draw(`[${i}]`, child)));
     } else if (attrData instanceof Object) {
-      let info_list = [];
+      let attrChildList = [];
       for (let key of Object.keys(attrData)) {
-        let children = attrData[key];
-        info_list.push(this._draw(key, children));
+        attrChildList.push(this._draw(key, attrData[key]));
       }
 
-      return {
-        "icon": "jstree-file",
-        "text": attrName,
-        "state": { "opened" : true },
-        "children": info_list,
-      };
+      return this._drawAttrTree(attrName, attrChildList);
     } else {
       return this._drawPlainAttr(attrName, attrData);
     }
   }
-
-  draw() {
-    return this._draw(this.attrName, this.attrData);
-  }
 }
 
-export class NetNode {
+class NetNode {
+  static _splitLinkPointerType(pointerType) {
+    if (!pointerType) {
+      return null;
+    }
+
+    if (pointerType.indexOf("|") < 0) {
+        return pointerType;
+    }
+
+    let pointerTypes = pointerType.split("|");
+    for (let i = pointerTypes.length - 1; i >=0; i--) {
+      pointerTypes[i] = pointerTypes[i].trim();
+      if (pointerTypes[i].length === 0) {
+        pointerTypes.splice(i, 1);
+      }
+    }
+
+    return pointerTypes;
+  }
+
   constructor(id, type, key, data, attrMap) {
     this.id = id; // Unique node ID
 
@@ -145,16 +145,133 @@ export class NetNode {
     };
   }
 
+  _getDataContent(data, key) {
+    return "";
+  }
+
+  getDataContent(key) {
+    return this._getDataContent(this.data, key);
+  }
+
+  _loadPointers(data, pointerFromNameList, linkDesc, pointerList) {
+      if (!pointerFromNameList || pointerFromNameList.length === 0)
+        return pointerList;
+
+      let new_data = this._getDataContent(data, pointerFromNameList[0]);
+      if (new_data == null) {
+        return pointerList;
+      }
+
+      if (pointerFromNameList.length === 1) {
+        if (Array.isArray(new_data)) {
+          if ("PointerConvertFunc" in linkDesc)
+            new_data = new_data.map(item => linkDesc.PointerConvertFunc(item))
+          pointerList = pointerList.concat(new_data);
+        }
+        else {
+          if ("PointerConvertFunc" in linkDesc)
+            new_data = linkDesc.PointerConvertFunc(new_data);
+          pointerList.push(new_data);
+        }
+
+        return pointerList;
+      }
+      else {
+        if (Array.isArray(new_data)) {
+          for (let i = 0; i < new_data.length; i++) {
+            pointerList = pointerList.concat(this._loadPointers(new_data[i],
+                      pointerFromNameList.slice(1, pointerFromNameList.length),
+                      linkDesc, pointerList));
+          }
+        }
+        else {
+          pointerList = pointerList.concat(this._loadPointers(new_data,
+                      pointerFromNameList.slice(1, pointerFromNameList.length),
+                      linkDesc, pointerList));
+        }
+        return pointerList;
+      }
+  }
+
   loadLinkPointer(data, linkDesc) {
-    return null;
+    if (!data)
+      return null;
+
+    /* Load pointer value */
+    let pointerList = [];
+    if ("PointerGetFunc" in linkDesc && linkDesc.PointerGetFunc) {
+      /* Call PointerGetFun to get the value */
+      pointerList.push(linkDesc.PointerGetFunc(data, linkDesc.PointerFromName));
+    }
+    else if ("PointerValue" in linkDesc) {
+      /* Use a fixed value */
+      pointerList.push(linkDesc.PointerValue);
+    }
+    else {
+      pointerList = this._loadPointers(data, linkDesc.PointerFromName.split("/"), linkDesc, pointerList);
+    }
+    return pointerList;
   }
 
   loadLinkPointerType(data, linkDesc) {
-    return null;
+    if (!data)
+      return null;
+
+    /* Load pointer_type value */
+    let pointer_type;
+    if ("PointerType" in linkDesc) {
+      pointer_type = linkDesc.PointerType;
+    }
+    else if ("PointerTypeGetFunc" in linkDesc && linkDesc.PointerTypeGetFunc) {
+      pointer_type = linkDesc.PointerTypeGetFunc(data, linkDesc.PointerFromName);
+    }
+    else if ("PointerTypeName" in linkDesc && "PointerTypeMap" in linkDesc)  {
+      let tptype = this._getDataContent(data, linkDesc.PointerTypeName);
+      pointer_type = linkDesc.PointerTypeMap[tptype];
+    }
+    return pointer_type;
+  }
+
+  _loadLinkInfo(data, linkDescList) {
+    let link_info = [];
+    for (let i = 0; i < linkDescList.length; i++) {
+      let linkDesc = linkDescList[i];
+      let pointerList = this.loadLinkPointer(data, linkDesc);
+      if (pointerList == null) {
+        continue;
+      }
+
+      /* Load pointer type */
+      let pointer_type = this.loadLinkPointerType(data, linkDesc);
+      if (pointer_type == null) {
+          continue;
+      }
+
+      if (Array.isArray(pointer_type)) {
+        let link_info2 = this._loadLinkInfo(data, pointer_type);
+        link_info = link_info.concat(link_info2);
+      }
+      else {
+        let link_info_item = {
+            pointer_from_name: linkDesc.PointerFromName,
+            pointer_to_name: linkDesc.PointerToName,
+            pointer_type: NetNode._splitLinkPointerType(pointer_type),
+            pointer_list: pointerList,
+        };
+        if (linkDesc.PointerNote != null)
+          link_info_item.note = linkDesc.PointerNote;
+
+        link_info.push(link_info_item);
+      }
+    }
+
+    return link_info;
   }
 
   loadLinkInfo() {
-    return null;
+    if (this.data == null || this.templateInfo.Link == null)
+      return [];
+    return this._loadLinkInfo(this.data, this.templateInfo.Link);
   }
 }
 
@@ -184,13 +301,16 @@ export class NetJsonNode extends NetNode {
     if (this.attributes == null && this.data != null) {
       this.attributes = [];
       for (let key of Object.keys(this.data)) {
-        let children = this.data[key];
         let attrClass = this._getAttrClass(key);
-        this.attributes.push(new attrClass(key, children));
+        this.attributes.push(new attrClass(key, this.data[key]));
       }
     }
 
     return super.drawAttr();
+  }
+
+  _getDataContent(data, key) {
+    return data[key];
   }
 }
 
@@ -231,135 +351,20 @@ export class NetXmlNode extends NetNode {
     if (this.attributes == null && this.data != null) {
       this.attributes = [];
       for (let i = 0; i < this.data.children.length; i++) {
-        let children = this.data.children[i];
-        let attrClass = this._getAttrClass(children.tagName);
-        this.attributes.push(new attrClass(children.tagName, children));
+        let child = this.data.children[i];
+        let attrClass = this._getAttrClass(child.tagName);
+        this.attributes.push(new attrClass(child.tagName, child));
       }
     }
 
     return super.drawAttr();
   }
 
-  _loadPointers(data, pointerFromNameList, pointerList) {
-      if (!pointerFromNameList || pointerFromNameList.length === 0)
-        return pointerList;
-
-      let new_data = data.getElementsByTagName(pointerFromNameList[0]);
-      if (new_data == null || new_data.length === 0) {
-        return pointerList;
-      }
-
-      if (pointerFromNameList.length === 1) {
-        for (let i = 0; i < new_data.length; i++) {
-          pointerList.push(new_data[i].textContent);
-        }
-        return pointerList;
-      }
-      else {
-        for (let i = 0; i < new_data.length; i++) {
-          pointerList = pointerList.concat(this._loadPointers(new_data[i],
-                    pointerFromNameList.slice(1, pointerFromNameList.length), pointerList));
-        }
-        return pointerList;
-      }
-  }
-
-  loadLinkPointer(data, linkDesc) {
-    if (!data)
-      return null;
-
-    /* Load pointer value */
-    let pointerList = [];
-    if ("PointerGetFunc" in linkDesc && linkDesc.PointerGetFunc) {
-      pointerList.push(linkDesc.PointerGetFunc(data, linkDesc.PointerFromName));
-    }
-    else if ("PointerValue" in linkDesc) {
-      pointerList.push(linkDesc.PointerValue);
-    }
-    else {
-      pointerList = this._loadPointers(data, linkDesc.PointerFromName.split("/"), pointerList);
-    }
-    return pointerList;
-  }
-
-  loadLinkPointerType(data, linkDesc) {
-    if (!this.data)
-      return null;
-
-    /* Load pointer_type value */
-    let pointer_type;
-    if ("PointerType" in linkDesc) {
-      pointer_type = linkDesc.PointerType;
-    }
-    else if ("PointerTypeGetFunc" in linkDesc && linkDesc.PointerTypeGetFunc) {
-      pointer_type = linkDesc.PointerTypeGetFunc(data, linkDesc.PointerFromName);
-    }
-    else if ("PointerTypeName" in linkDesc && "PointerTypeMap" in linkDesc)  {
-      let tptype = data.getElementsByTagName(linkDesc.PointerTypeName)[0].textContent;
-      pointer_type = linkDesc.PointerTypeMap[tptype];
-    }
-    return pointer_type;
-  }
-
-  static _splitLinkPointerType(pointerType) {
-    if (!pointerType) {
-      return null;
-    }
-
-    if (pointerType.indexOf("|") < 0) {
-        return pointerType;
-    }
-
-    let pointerTypes = pointerType.split("|");
-    for (let i = pointerTypes.length - 1; i >=0; i--) {
-      pointerTypes[i] = pointerTypes[i].trim();
-      if (pointerTypes[i].length === 0) {
-        pointerTypes.splice(i, 1);
-      }
-    }
-
-    return pointerTypes;
-  }
-
-  _loadLinkInfo(data, linkDescList) {
-    let link_info = [];
-    for (let i = 0; i < linkDescList.length; i++) {
-      let linkDesc = linkDescList[i];
-      let pointerList = this.loadLinkPointer(data, linkDesc);
-      if (pointerList == null) {
-        continue;
-      }
-
-      /* Load pointer type */
-      let pointer_type = this.loadLinkPointerType(data, linkDesc);
-      if (pointer_type == null) {
-          continue;
-      }
-
-      if (Array.isArray(pointer_type)) {
-        let link_info2 = this._loadLinkInfo(data, pointer_type);
-        link_info = link_info.concat(link_info2);
-      }
-      else {
-        let link_info_item = {
-            pointer_from_name: linkDesc.PointerFromName,
-            pointer_to_name: linkDesc.PointerToName,
-            pointer_type: NetXmlNode._splitLinkPointerType(pointer_type),
-            pointer_list: pointerList,
-        };
-        if (linkDesc.PointerNote != null)
-          link_info_item.note = linkDesc.PointerNote;
-        link_info.push(link_info_item);
-      }
-    }
-
-    return link_info;
-  }
-
-  loadLinkInfo() {
-    if (this.data == null || this.templateInfo.Link == null)
-      return [];
-    return this._loadLinkInfo(this.data, this.templateInfo.Link);
+  _getDataContent(data, key) {
+    if (data.getElementsByTagName(key).length === 1)
+      return data.getElementsByTagName(key)[0].textContent;
+    else if (data.getElementsByTagName(key).length > 1)
+      return data.getElementsByTagName(key).map(item => item.textContent);
   }
 }
 
@@ -395,7 +400,6 @@ export class NetDiagram {
     this.nodes = {};
     this.node_list = [];
     this.links = [];
-    this.xmlDoc = null;
 
     this.defaultNodeClass = NetNode;
     this.defaultLinkCLass = NetLink;
@@ -481,12 +485,12 @@ export class NetDiagram {
       return null;
 
     for (let i = 0; i < node_list.length; i++) {
-      let tmp_val = node_list[i].data.getElementsByTagName(key)[0];
-      if (!tmp_val)
+      let tmp_val = key ? node_list[i].getDataContent(key) : node_list[i].key;
+      if (tmp_val == null)
         continue;
 
       // Use string to compare
-      if (tmp_val.textContent === value.toString()) {
+      if (tmp_val === value.toString()) {
         return node_list[i];
       }
     }
@@ -519,9 +523,6 @@ export class NetDiagram {
 
     if (templateInfo["ChildNode"]) {
       for (let childType in templateInfo["ChildNode"]) {
-        // if (!itemData[childType])
-        //   continue;
-
         let nodeClass = this._getNodeClass(templateInfo["ChildNode"][childType]);
         for (let key of Object.keys(itemData)) {
 
@@ -593,14 +594,14 @@ export class NetDiagram {
     let jsonObj = null;
     try {
       jsonObj = djson.parse(jsonString);
-      // jsonObj = JSON.parse('{"gem":{}}');
     } catch(error) {
-      console.error(error);
       return false;
     }
 
     if (typeof(jsonObj) !== 'object')
       return false;
+
+    let link_info = {};
 
     for (let itemType of Object.keys(this.dataTemplate)) {
       this.nodes[itemType] = [];
@@ -628,18 +629,18 @@ export class NetDiagram {
           this.node_list.push(curr_new_node);
           this.node_count++;
 
-          // /* Link info to nodes needs to be 1:1 */
-          // if (link_info[curr_type] == null)
-          //   link_info[curr_type] = [];
+          /* Link info to nodes needs to be 1:1 */
+          if (link_info[curr_type] == null)
+            link_info[curr_type] = [];
 
-          // let tmp = curr_new_node.loadLinkInfo();
-          // link_info[curr_type].push(tmp);
+          let tmp = curr_new_node.loadLinkInfo();
+          link_info[curr_type].push(tmp);
         }
       }
     }
 
-    console.log(this.nodes);
-
+    /* Create actual links */
+    this._createLink(link_info);
     return true;
   }
 
@@ -693,6 +694,12 @@ export class NetDiagram {
     }
 
     /* Create actual links */
+    this._createLink(link_info);
+    return true;
+  }
+
+  _createLink(link_info) {
+    /* Create actual links */
     for (let itemType in link_info) {
       /* Previously node list and link list were created 1:1 */
       let node_list = this.nodes[itemType];
@@ -742,9 +749,6 @@ export class NetDiagram {
         }
       }
     }
-
-    this.xmlDoc = xmlDoc;
-    return true;
   }
 }
 
