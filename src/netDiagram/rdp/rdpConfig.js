@@ -1,15 +1,25 @@
 export var RdpConfigDiagramDisplay = {
   port: {
-    AvoidableNode: [ "queue_cfg", "vlan_action" ],
+    AvoidableNode: ["queue_cfg", "vlan_action"],
     AvoidLink: {
       flow: "port",
       gem: "flow",
     },
+    AvoidKey: [
+      "port/index=cpu0",
+      "port/index=switch",
+      "port/index=lag0",
+      "port/index=lag1",
+      "port/index=lan16",
+      "port/index=lan17",
+      "port/index=lan18",
+      "port/index=lan19",
+    ],
   },
 };
 
 export var RdpConfigVisDisplay = {
-  layout:{
+  layout: {
     hierarchical: {
       enabled: true,
       levelSeparation: 480,
@@ -18,9 +28,9 @@ export var RdpConfigVisDisplay = {
       blockShifting: false,
       edgeMinimization: false,
       parentCentralization: true,
-      direction: 'LR',        // UD, DU, LR, RL
-      sortMethod: 'directed'   // hubsize, directed
-    }
+      direction: "LR", // UD, DU, LR, RL
+      sortMethod: "directed", // hubsize, directed
+    },
   },
   physics: {
     enabled: true,
@@ -29,7 +39,7 @@ export var RdpConfigVisDisplay = {
       springLength: 100,
       springConstant: 0.01,
       nodeDistance: 120,
-      damping: 0.09
+      damping: 0.09,
     },
   },
   edges: {
@@ -39,21 +49,21 @@ export var RdpConfigVisDisplay = {
       roundness: 0.6,
     },
     font: {
-     align: 'bottom',
-     size: 26,
+      align: "bottom",
+      size: 26,
     },
   },
   nodes: {
     font: {
       size: 26,
-    }
+    },
   },
   interaction: {
     hover: true,
     hoverConnectedEdges: true,
     tooltipDelay: 80,
     navigationButtons: true,
-  }
+  },
 };
 
 export var RdpConfigJsTreeDisplay = {

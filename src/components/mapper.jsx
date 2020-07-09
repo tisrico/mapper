@@ -184,13 +184,21 @@ class Mapper extends Component {
 
         /* Get views */
         let views = [];
-        for (let key in this.props.configDiagramDisplay) {
+        let configDiagramDisplay = this.props.configDiagramDisplay;
+        for (let key in configDiagramDisplay) {
             for (let i = 0; i < this.diagram.nodes[key].length; i++) {
                 let mib = this.diagram.nodes[key][i];
+
+                /* Some keys may be skipped */
+                if (configDiagramDisplay[key].AvoidKey &&
+                    configDiagramDisplay[key].AvoidKey.indexOf(mib.key) >= 0)
+                    continue;
+
                 let option = key + " " + mib.key;
                 views.push(option);
             }
         }
+        views.sort();
 
         let t1 = performance.now();
         this.networkInfo = {
