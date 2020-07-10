@@ -5,6 +5,7 @@ import {
     NetDiagram,
 } from "../netDiagram";
 
+class RdpLink extends NetLink {}
 class RdpNodeAttribute extends NetJsonNodeAttribute {}
 
 class RdpNode extends NetJsonNode {
@@ -15,22 +16,19 @@ class RdpNode extends NetJsonNode {
 
     draw() {
         var node_data = super.draw();
+        node_data.shape = "box";
+        node_data.margin = 20;
+        node_data.font = { size: 26 };
 
-        if (!rdpDisplayTemplate[this.type])
-        return node_data;
+        if (!rdpDisplayTemplate[this.type]) return node_data;
 
         var displayTemplate = rdpDisplayTemplate[this.type].NodeTemplate;
-        if (!displayTemplate)
-        return node_data;
+        if (!displayTemplate) return node_data;
 
-        if (displayTemplate.level)
-          node_data.level = displayTemplate.level;
-        if (displayTemplate.color)
-          node_data.color = displayTemplate.color;
-        if (displayTemplate.margin)
-          node_data.margin = displayTemplate.margin;
-        if (displayTemplate.shape)
-          node_data.shape = displayTemplate.shape;
+        if (displayTemplate.level) node_data.level = displayTemplate.level;
+        if (displayTemplate.color) node_data.color = displayTemplate.color;
+        if (displayTemplate.margin) node_data.margin = displayTemplate.margin;
+        if (displayTemplate.shape) node_data.shape = displayTemplate.shape;
         return node_data;
     }
 }
@@ -45,13 +43,9 @@ class RdpNodeFlow extends RdpNode {
     }
 }
 
-class RdpLink extends NetLink {}
-
-class RdpDiagram extends NetDiagram {
-    constructor() {
-        super(rdpTempate, null);
-        this.defaultNodeClass = RdpNode;
-        this.defaultLinkCLass = RdpLink;
+class RdpNodeQueueCfg extends RdpNode {
+    getDisplayName() {
+        return this.key + " - qid " + this.getDataContent("queue_id");
     }
 }
 
@@ -75,6 +69,36 @@ class RdpNodeAttributeQueueCfg extends RdpNodeAttributeQueueCollapsed {
     }
 }
 
+class RdpNodeAttributePackets extends RdpNodeAttributeQueueCollapsed {
+    draw() {
+        let res = super.draw();
+        let packetInfo = "";
+        packetInfo +=
+            this.attrData.packets != null ? "p" + this.attrData.packets : "";
+
+        if (this.attrData.bytes != null) {
+            if (packetInfo !== "")
+                packetInfo += ", "
+
+            packetInfo += "b" + this.attrData.bytes;
+        }
+
+        if (packetInfo !== "")
+            packetInfo = " - " + packetInfo;
+
+        res.text += packetInfo;
+        return res;
+    }
+}
+
+class RdpDiagram extends NetDiagram {
+    constructor() {
+        super(rdpTempate, null);
+        this.defaultNodeClass = RdpNode;
+        this.defaultLinkCLass = RdpLink;
+    }
+}
+
 export default RdpDiagram;
 
 var rdpTempate = {
@@ -83,31 +107,37 @@ var rdpTempate = {
             {
                 PointerFromName: "tm_cfg/egress_tm",
                 PointerType: "egress_tm",
-            }
-        ]
+            },
+        ],
     },
     gem: {
         Link: [
             {
                 PointerFromName: "us_cfg/tcont",
                 PointerType: "tcont",
-            }
-        ]
+            },
+        ],
     },
     tcont: {
         Link: [
             {
                 PointerFromName: "egress_tm",
                 PointerType: "egress_tm",
-            }
-        ]
+            },
+        ],
     },
     egress_tm: {
         ChildNode: {
-            queue_cfg: {},
+            queue_cfg: {
+                NodeClass: RdpNodeQueueCfg,
+            },
         },
         AttrMap: {
             queue_cfg: RdpNodeAttributeQueueCfg,
+            queue_stat: {
+                passed: RdpNodeAttributePackets,
+                discarded: RdpNodeAttributePackets,
+            }
         },
     },
     ingress_class: {
@@ -141,11 +171,12 @@ var rdpTempate = {
                         PointerType: "gem",
                         PointerConvertFunc: RdpNodeFlow.getRelatedGem,
                     },
-                ]
+                ],
             },
         },
         AttrMap: {
             flow: RdpNodeAttributeQueueCollapsed,
+            flow_stat: RdpNodeAttributePackets,
         },
     },
     vlan_action: {},
@@ -156,54 +187,46 @@ var rdpDisplayTemplate = {
         NodeTemplate: {
             margin: 30,
             level: 6,
-            color: "#00FF00FF",
+            color: "red",
         },
     },
     ingress_class: {
         NodeTemplate: {
-            margin: 30,
             level: 2,
             color: "#9C9C9C",
         },
     },
     flow: {
         NodeTemplate: {
-            margin: 30,
             level: 3,
-            color: "#9C9C9C",
+            shape: "ellipse",
         },
     },
     vlan_action: {
         NodeTemplate: {
-            margin: 30,
             level: 1,
         },
     },
     gem: {
         NodeTemplate: {
-            margin: 30,
             level: 5,
         },
     },
     tcont: {
         NodeTemplate: {
-            margin: 30,
+            color: "red",
             level: 6,
         },
     },
     egress_tm: {
         NodeTemplate: {
-            margin: 30,
             level: 7,
-            color: "#9C9C9C",
         },
     },
     queue_cfg: {
         NodeTemplate: {
-            margin: 30,
             level: 8,
-            color: "#9C9C9C",
+            shape: "ellipse",
         },
-    }
-
+    },
 };

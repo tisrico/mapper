@@ -2,9 +2,11 @@ import vis from "vis";
 import djson from "dirty-json";
 
 class NetNodeAttribute {
-  constructor(attrName, attrData) {
+  constructor(attrName, attrData, attrMap) {
     this.attrName = attrName;
     this.attrData = attrData;
+
+    this.attrMap = attrMap;
   }
 
   _drawAttrTree(attrName, attrChildren) {
@@ -32,7 +34,7 @@ class NetNodeAttribute {
   }
 
   draw() {
-    return this._draw(this.attrName, this.attrData);
+    return this._draw(this.attrName, this.attrData, this.attrMap);
   }
 }
 
@@ -41,7 +43,7 @@ export class NetXmlNodeAttribute extends NetNodeAttribute {
     return attrData.textContent.trim();
   }
 
-  _draw(attrName, attrData) {
+  _draw(attrName, attrData, attrMap) {
     if (attrData.children.length === 0) {
       return this._drawPlainAttr(attrName, attrData);
     } else {
@@ -56,18 +58,35 @@ export class NetJsonNodeAttribute extends NetNodeAttribute {
     return attrData.toString();
   }
 
-  _draw(attrName, attrData) {
+  _draw(attrName, attrData, attrMap) {
     if (attrData instanceof Array) {
+      /* Draw list */
       return this._drawAttrTree(attrName,
         attrData.map((child, i) => this._draw(`[${i}]`, child)));
     } else if (attrData instanceof Object) {
+      /* Draw object */
       let attrChildList = [];
       for (let key of Object.keys(attrData)) {
-        attrChildList.push(this._draw(key, attrData[key]));
+        if (attrMap && key in attrMap) {
+          if (typeof attrMap[key] === 'function') {
+            /* If a class is found, use that class to draw (and no more attrMap) */
+            let attrObj = new attrMap[key](key, attrData[key], null);
+            attrChildList.push(attrObj.draw());
+          }
+          else {
+            /* Otherwise use default _draw go to into next level */
+            attrChildList.push(this._draw(key, attrData[key], attrMap[key]));
+          }
+        }
+        else {
+          /* No attrMap, use default _draw */
+          attrChildList.push(this._draw(key, attrData[key], null));
+        }
       }
 
       return this._drawAttrTree(attrName, attrChildList);
     } else {
+      /* Draw plain attr */
       return this._drawPlainAttr(attrName, attrData);
     }
   }
@@ -112,7 +131,12 @@ class NetNode {
     return this.key;
   }
 
+  _getRealAttrName(attrName) {
+    return attrName;
+  }
+
   _getAttrClass(attrName) {
+    attrName = this._getRealAttrName(attrName);
     if (this.attrMap && this.attrMap[attrName])
       return this.attrMap[attrName];
     else
@@ -127,9 +151,21 @@ class NetNode {
   }
 
   drawAttr(attrClassMap) {
-    let info_list = [];
+    if (this.attributes == null && this.data != null) {
+      this.attributes = [];
+      this.iterateData((key, data) => {
+        let attrClass = this._getAttrClass(key);
+        if (typeof attrClass === 'object') {
+          attrClass = this.defaultAttrClass;
+          this.attributes.push(new attrClass(key, data, this.attrMap[this._getRealAttrName(key)]));
+        }
+        else if (typeof attrClass === 'function') {
+          this.attributes.push(new attrClass(key, data, null));
+        }
+      });
+    }
 
-    // draw attrs
+    let info_list = [];
     if (this.attributes) {
       for (let i = 0; i < this.attributes.length; i++) {
         let attrData = this.attributes[i].draw();
@@ -151,6 +187,14 @@ class NetNode {
 
   getDataContent(key) {
     return this._getDataContent(this.data, key);
+  }
+
+  _iterateData(data, callbackFunc) {
+    return;
+  }
+
+  iterateData(callbackFunc) {
+    return this._iterateData(this.data, callbackFunc);
   }
 
   _loadPointers(data, pointerFromNameList, linkDesc, pointerList) {
@@ -285,32 +329,23 @@ export class NetJsonNode extends NetNode {
     this.defaultAttrClass = NetJsonNodeAttribute;
   }
 
-  _getAttrClass(attrName) {
+  _getRealAttrName(attrName) {
     let match = attrName.match(/^(.+)\[.+\]$/);
     if (match) {
       attrName = match[1];
     }
-
-    if (this.attrMap && this.attrMap[attrName])
-      return this.attrMap[attrName];
-    else
-      return this.defaultAttrClass;
-  }
-
-  drawAttr() {
-    if (this.attributes == null && this.data != null) {
-      this.attributes = [];
-      for (let key of Object.keys(this.data)) {
-        let attrClass = this._getAttrClass(key);
-        this.attributes.push(new attrClass(key, this.data[key]));
-      }
-    }
-
-    return super.drawAttr();
+    return attrName;
   }
 
   _getDataContent(data, key) {
     return data[key];
+  }
+
+  _iterateData(data, callbackFunc) {
+    if (typeof callbackFunc !== 'function') return;
+    for (let key of Object.keys(data)) {
+      callbackFunc(key, data[key]);
+    }
   }
 }
 
@@ -347,24 +382,18 @@ export class NetXmlNode extends NetNode {
     return this.type + " " + this.key;
   }
 
-  drawAttr() {
-    if (this.attributes == null && this.data != null) {
-      this.attributes = [];
-      for (let i = 0; i < this.data.children.length; i++) {
-        let child = this.data.children[i];
-        let attrClass = this._getAttrClass(child.tagName);
-        this.attributes.push(new attrClass(child.tagName, child));
-      }
-    }
-
-    return super.drawAttr();
-  }
-
   _getDataContent(data, key) {
     if (data.getElementsByTagName(key).length === 1)
       return data.getElementsByTagName(key)[0].textContent;
     else if (data.getElementsByTagName(key).length > 1)
       return data.getElementsByTagName(key).map(item => item.textContent);
+  }
+
+  _iterateData(data, callbackFunc) {
+    if (typeof callbackFunc !== 'function') return;
+    for (let i = 0; i < data.children.length; i++) {
+      callbackFunc(data.children[i].tagName, data.children[i]);
+    }
   }
 }
 
