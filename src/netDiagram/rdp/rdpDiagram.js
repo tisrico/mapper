@@ -43,6 +43,27 @@ class RdpNodeFlow extends RdpNode {
     }
 }
 
+class RdpNodeGem extends RdpNode {
+    getDisplayName() {
+        return this.key + "\n(port " + this.getDataContent("gem_port") + ")";
+    }
+}
+
+class RdpNodeEgressTm extends RdpNode {
+    getDisplayName() {
+        return this.key + "\n(" + this.getDataContent("mode") + ")";
+    }
+}
+
+class RdpNodeEgressIngressClass extends RdpNode {
+    getDisplayName() {
+        if (this.data['cfg'] && this.data['cfg']['prty'])
+            return this.key + "\n(prty " + this.data['cfg']['prty'] + ")";
+        else
+            return super.getDisplayName();
+    }
+}
+
 class RdpNodeQueueCfg extends RdpNode {
     getDisplayName() {
         return this.key + " - qid " + this.getDataContent("queue_id");
@@ -111,6 +132,7 @@ var rdpTempate = {
         ],
     },
     gem: {
+        NodeClass: RdpNodeGem,
         Link: [
             {
                 PointerFromName: "us_cfg/tcont",
@@ -127,6 +149,7 @@ var rdpTempate = {
         ],
     },
     egress_tm: {
+        NodeClass: RdpNodeEgressTm,
         ChildNode: {
             queue_cfg: {
                 NodeClass: RdpNodeQueueCfg,
@@ -141,6 +164,7 @@ var rdpTempate = {
         },
     },
     ingress_class: {
+        NodeClass: RdpNodeEgressIngressClass,
         ChildNode: {
             flow: {
                 NodeClass: RdpNodeFlow,
