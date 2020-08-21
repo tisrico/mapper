@@ -15,7 +15,7 @@ export var OmciConfigDiagramDisplay = {
       // Avoid displaying objects from shared TCont to other MacBridgeServiceProfile
       MulticastGemInterworkingTp: ["MacBridgePortConfigData"],
       TCont: ["GemPortNetworkCtp"],
-      PriorityQueueG: ["GemPortNetworkCtp"],
+      PriorityQueueG: ["GemPortNetworkCtp", "TCont", "PptpEthernetUni", "VirtualEthernetInterfacePoint"],
     },
   },
   OntG: {
