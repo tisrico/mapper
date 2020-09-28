@@ -10,7 +10,9 @@ export var OmciConfigDiagramDisplay = {
     AvoidLink: {
       VirtualEthernetInterfacePoint: ["CircuitPack"],
       PptpEthernetUni: ["CircuitPack"],
+      PptpPotsUni: ["CircuitPack", "SipUserData"],
       GemInterworkingTp: ["MacBridgePortConfigData"],
+      VoIpVoiceCtp: ["SipUserData", "MgcConfigData"],
 
       // Avoid displaying objects from shared TCont to other MacBridgeServiceProfile
       MulticastGemInterworkingTp: ["MacBridgePortConfigData"],
@@ -28,6 +30,7 @@ export var OmciConfigDiagramDisplay = {
     AvoidLink: {
       PptpEthernetUni: "*",
       VirtualEthernetInterfacePoint: "*",
+      PptpPotsUni: "*",
     },
   },
   OnuG: {
@@ -40,6 +43,7 @@ export var OmciConfigDiagramDisplay = {
     AvoidLink: {
       PptpEthernetUni: "*",
       VirtualEthernetInterfacePoint: "*",
+      PptpPotsUni: "*",
     },
   },
 };

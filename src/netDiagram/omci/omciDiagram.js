@@ -279,6 +279,32 @@ class OmciMib extends NetXmlNode {
   }
 }
 
+class VoIpVoiceCtpMib extends OmciMib {
+  static getSipUserDataMeid(xmlItem, pointerName) {
+    let meid = UniMib.getXmlItemValue(xmlItem, OmciDiagram.getXmlItemKeyName());
+    let sip_meid = VoIpVoiceCtpMib.getXmlItemValue(xmlItem, pointerName);
+    if (!meid || !sip_meid) return null;
+
+    // This is a workaround for Casa Implementation that last voice port is used
+    // for management.
+    if (parseInt(meid) !== 1 && parseInt(sip_meid) === 1) return null;
+
+    return sip_meid;
+  }
+
+  static getMgcConfigDataMeid(xmlItem, pointerName) {
+    let meid = UniMib.getXmlItemValue(xmlItem, OmciDiagram.getXmlItemKeyName());
+    let mgc_meid = VoIpVoiceCtpMib.getXmlItemValue(xmlItem, pointerName);
+    if (!meid || !mgc_meid) return null;
+
+    // This is a workaround for Casa Implementation that last voice port is used
+    // for management.
+    if (parseInt(meid) === 1 && parseInt(mgc_meid) === 1) return null;
+
+    return mgc_meid;
+  }
+}
+
 class UniMib extends OmciMib {
   static getCircuitPackMeid(xmlItem, pointerName) {
     let meid = UniMib.getXmlItemValue(xmlItem, OmciDiagram.getXmlItemKeyName());
@@ -503,6 +529,26 @@ var omciTemplate = {
         PointerFromName: "ManagedEntityId",
         PointerToName: "ManagedEntityId",
         PointerType: "OnuG",
+      },
+    ],
+  },
+  VoIpConfigData: {
+    G988: {
+      name: "VoIP config data",
+      class_id: 138,
+      chapter: "9.9.18",
+      page: 340,
+    },
+    Link: [
+      {
+        PointerToName: "ManagedEntityId",
+        PointerType: "OntG",
+        PointerValue: 0,
+      },
+      {
+        PointerToName: "ManagedEntityId",
+        PointerType: "OnuG",
+        PointerValue: 0,
       },
     ],
   },
@@ -821,6 +867,135 @@ var omciTemplate = {
       },
     ],
   },
+  MgcConfigData: {
+    G988: {
+      name: "MGC config data",
+      class_id: 136,
+      chapter: "9.9.16",
+      page: 337,
+    },
+    Link: [
+      {
+        PointerFromName: "TcpUdpPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "TcpUdpConfigData",
+      },
+    ],
+  },
+  VoIpVoiceCtp: {
+    G988: {
+      name: "VoIP voice CTP",
+      class_id: 139,
+      chapter: "9.9.4",
+      page: 317,
+    },
+    Link: [
+      {
+        PointerFromName: "PptpPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "PptpPotsUni",
+      },
+      {
+        PointerFromName: "VoIpMediaProfilePointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "VoIpMediaProfile",
+      },
+      {
+        PointerFromName: "UserProtocolPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "SipUserData",
+        PointerGetFunc: VoIpVoiceCtpMib.getSipUserDataMeid,
+      },
+      {
+        PointerFromName: "UserProtocolPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "MgcConfigData",
+        PointerGetFunc: VoIpVoiceCtpMib.getMgcConfigDataMeid,
+      },
+    ],
+  },
+  SipUserData: {
+    G988: {
+      name: "SIP user data",
+      class_id: 153,
+      chapter: "9.9.2",
+      page: 313,
+    },
+    AttrMap: {
+      SipDisplayName: OmciMibAttrHexString,
+    },
+    Link: [
+      {
+        PointerFromName: "PptpPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "PptpPotsUni",
+      },
+      {
+        PointerFromName: "SipAgentPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "SipAgentConfigData",
+      },
+      {
+        PointerFromName: "UsernamePassword",
+        PointerToName: "ManagedEntityId",
+        PointerType: "AuthenticationSecurityMethod",
+      },
+    ]
+  },
+  AuthenticationSecurityMethod: {
+    G988: {
+      name: "Authentication security method",
+      class_id: 148,
+      chapter: "9.12.4",
+      page: 353,
+    },
+    AttrMap: {
+      Username1: OmciMibAttrHexString,
+      Password: OmciMibAttrHexString,
+      Realm: OmciMibAttrHexString,
+      Username2: OmciMibAttrHexString,
+    },
+  },
+  SipAgentConfigData: {
+    G988: {
+      name: "SIP agent config data",
+      class_id: 150,
+      chapter: "9.9.3",
+      page: 314,
+    },
+    Link: [
+      {
+        PointerFromName: "TcpUdpPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "TcpUdpConfigData",
+      },
+    ],
+  },
+  VoIpMediaProfile: {
+    G988: {
+      name: "VoIP media profile",
+      class_id: 142,
+      chapter: "9.9.5",
+      page: 318,
+    },
+  },
+  PptpPotsUni: {
+    NodeClass: UniMib,
+    G988: {
+      name: "Physical path termination point POTS UNI",
+      class_id: 53,
+      chapter: "9.9.1",
+      page: 310,
+    },
+    Link: [
+      {
+        PointerFromName: "ManagedEntityId",
+        PointerToName: "ManagedEntityId",
+        PointerType: "CircuitPack",
+        PointerGetFunc: UniMib.getCircuitPackMeid,
+      },
+    ],
+  },
   MapperServiceProfile: {
     // MibNodeClass: MapperServiceProfileMib,
     G988: {
@@ -1096,6 +1271,12 @@ var omciDisplayTemplate = {
       margin: 10,
     },
   },
+  VoIpConfigData: {
+    NodeTemplate: {
+      level: 4,
+      margin: 10,
+    },
+  },
   OnuG: {
     NodeTemplate: {
       level: 4,
@@ -1208,7 +1389,7 @@ var omciDisplayTemplate = {
 
   IpHostConfigData: {
     NodeTemplate: {
-      level: 4,
+      level: 3,
       margin: 30,
       color: "red",
       mass: 0.8,
@@ -1216,7 +1397,7 @@ var omciDisplayTemplate = {
   },
   Ipv6HostConfigData: {
     NodeTemplate: {
-      level: 4,
+      level: 3,
       margin: 30,
       color: "red",
       mass: 0.8,
@@ -1224,7 +1405,47 @@ var omciDisplayTemplate = {
   },
   TcpUdpConfigData: {
     NodeTemplate: {
+      level: 4,
+    },
+  },
+  MgcConfigData: {
+    NodeTemplate: {
       level: 5,
+    },
+  },
+  SipAgentConfigData: {
+    NodeTemplate: {
+      level: 5,
+    },
+  },
+  SipUserData: {
+    NodeTemplate: {
+      level: 6,
+    },
+  },
+  AuthenticationSecurityMethod: {
+    NodeTemplate: {
+      level: 6,
+      color: "#9C9C9C",
+    },
+  },
+  VoIpVoiceCtp: {
+    NodeTemplate: {
+      level: 7,
+    },
+  },
+  VoIpMediaProfile: {
+    NodeTemplate: {
+      level: 7,
+      color: "#9C9C9C",
+    },
+  },
+  PptpPotsUni: {
+    NodeTemplate: {
+      level: 8,
+      margin: 30,
+      color: "red",
+      mass: 0.2,
     },
   },
   MapperServiceProfile: {
@@ -1249,7 +1470,7 @@ var omciDisplayTemplate = {
   },
   GemTrafficDescriptor: {
     NodeTemplate: {
-      level: 6,
+      level: 4,
       display_name: "GEM Traffic Descriptor",
       color: "#9C9C9C",
     },
