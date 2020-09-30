@@ -509,7 +509,7 @@ export class NetDiagram {
   }
 
   findNode(itemType, key, value) {
-    if (!key || !value)
+    if (key == null || value == null)
       return null;
 
     let node_list = this.nodes[itemType];
