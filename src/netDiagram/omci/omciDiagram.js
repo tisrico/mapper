@@ -971,12 +971,55 @@ var omciTemplate = {
       },
     ],
   },
+  VoIpLineStatus: {
+    G988: {
+      name: "VoIP line status",
+      class_id: 141,
+      chapter: "9.9.11",
+      page: 329,
+    },
+    Link: [
+      {
+        PointerFromName: "ManagedEntityId",
+        PointerToName: "ManagedEntityId",
+        PointerType: "PptpPotsUni",
+      },
+    ],
+  },
   VoIpMediaProfile: {
     G988: {
       name: "VoIP media profile",
-      class_id: 142,
+      class_id: 58,
       chapter: "9.9.5",
       page: 318,
+    },
+    Link: [
+      {
+        PointerFromName: "VoiceServiceProfilePointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "VoiceServiceProfile",
+      },
+      {
+        PointerFromName: "RtpProfilePointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "RtpProfileData",
+      },
+    ],
+  },
+  VoiceServiceProfile: {
+    G988: {
+      name: "Voice service profile",
+      class_id: 142,
+      chapter: "9.9.6",
+      page: 320,
+    },
+  },
+  RtpProfileData: {
+    G988: {
+      name: "RTP profile data",
+      class_id: 143,
+      chapter: "9.9.7",
+      page: 324,
     },
   },
   PptpPotsUni: {
@@ -1434,15 +1477,30 @@ var omciDisplayTemplate = {
       level: 7,
     },
   },
+  VoIpLineStatus: {
+    NodeTemplate: {
+      level: 10,
+    },
+  },
   VoIpMediaProfile: {
     NodeTemplate: {
-      level: 7,
+      level: 8,
       color: "#9C9C9C",
+    },
+  },
+  VoiceServiceProfile: {
+    NodeTemplate: {
+      level: 9,
+    },
+  },
+  RtpProfileData: {
+    NodeTemplate: {
+      level: 9,
     },
   },
   PptpPotsUni: {
     NodeTemplate: {
-      level: 8,
+      level: 9,
       margin: 30,
       color: "red",
       mass: 0.2,
