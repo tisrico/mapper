@@ -6,6 +6,11 @@ export var OmciConfigDiagramDisplay = {
       "ExtendedVlanTaggingOperationConfigurationData",
       "Dot1agCFMStack",
       "UniG",
+      "GemTrafficDescriptor",
+      "VlanTaggingFilterData",
+      "TCont",
+      "PptpEthernetUni",
+      "VirtualEthernetInterfacePoint",
     ],
     AvoidLink: {
       VirtualEthernetInterfacePoint: ["CircuitPack"],
