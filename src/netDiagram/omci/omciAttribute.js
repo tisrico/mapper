@@ -41,8 +41,19 @@ export class MibAttrUtil {
         return result;
     }
 
+    static get2ByteWordBit(byte_buf, word, bit_start, bit_end) {
+        return MibAttrUtil.getWordBit(byte_buf, 2, word, bit_start, bit_end);
+    }
+
     static get4ByteWordBit(byte_buf, word, bit_start, bit_end) {
         return MibAttrUtil.getWordBit(byte_buf, 4, word, bit_start, bit_end);
+    }
+
+    static int32ToIp(num) {
+       return (num >>> 24 & 0xFF) + '.' +
+       (num >>> 16 & 0xFF) + '.' +
+       (num >>> 8 & 0xFF) + '.' +
+       (num & 0xFF);
     }
 
     static attachText(orig_str, new_text) {
@@ -455,5 +466,66 @@ export class MibAttrForwardOption {
             return null;
 
         return new MibAttrForwardOption(mode);
+    }
+}
+
+export class MibAttrDynamicAccessControlList {
+    constructor(control_list) {
+        this.control_list = control_list
+    }
+
+    dump() {
+        if (this.control_list == null || this.control_list.length === 0)
+            return "<Empty>";
+
+        let text = "";
+        let offset = 0, part = 0;
+        while (offset < this.control_list.length) {
+            let tbl_ctrl = this.control_list[offset + 0];
+            let set_ctrl = (tbl_ctrl >>> 14) & 0x3;
+            let row_part_id = (tbl_ctrl >>> 11) & 0x7;
+            let test = (tbl_ctrl >>> 10) & 0x1;
+            let row_key = tbl_ctrl & 0x3FF;
+
+            text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><Format> 0x${row_part_id}`);
+            text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><Test> ${test}`);
+            text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><Row Key> ${row_key} (0x${row_key.toString(16)})`);
+
+            if (part === 0) {
+                let gem_port = this.control_list[offset + 1];
+                let vlan_id = this.control_list[offset + 2];
+                let src_ip = this.control_list[offset + 3] + this.control_list[offset + 4] << 16;
+                let dst_ip_start = this.control_list[offset + 5] + this.control_list[offset + 6] << 16;
+                let dst_ip_end = this.control_list[offset + 7] + this.control_list[offset + 8] << 16;
+                let imputed_grp_bw = this.control_list[offset + 9] + this.control_list[offset + 10] << 16;
+
+                text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><GEM port ID> ${gem_port} (0x${gem_port.toString(16)})`);
+                text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><VLAN ID> ${vlan_id} (0x${vlan_id.toString(16)})`);
+                text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><Source IP> ${MibAttrUtil.int32ToIp(src_ip)}`);
+                text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><Dst IP Start> ${MibAttrUtil.int32ToIp(dst_ip_start)}`);
+                text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><Dst IP End> ${MibAttrUtil.int32ToIp(dst_ip_end)}`);
+                text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}><Imputed group BW> ${imputed_grp_bw} (0x${imputed_grp_bw.toString(16)})`);
+            } else {
+                text = MibAttrUtil.attachNewLine(text, `<Row Part ${part}> - Not supported yet -`);
+            }
+
+            part++;
+            offset += 12; /* Offset 24 bytes */
+        }
+
+        return text;
+    }
+
+    static parse(content) {
+        let bytes = MibAttrUtil.hexToBytes(content);
+        if (bytes == null)
+            return null;
+
+        let control_list = [];
+        for (let i = 0; i < bytes.length; i += 2) {
+            control_list.push(((bytes[i] << 8) | bytes[i+1]));
+        }
+
+        return new MibAttrDynamicAccessControlList(control_list);
     }
 }

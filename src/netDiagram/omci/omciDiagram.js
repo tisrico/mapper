@@ -5,6 +5,7 @@ import {
   MibAttrExtVlanDsMode,
   MibAttrVlanFilterList,
   MibAttrForwardOption,
+  MibAttrDynamicAccessControlList,
 } from "./omciAttribute.js";
 
 class OmciMibAttr extends NetXmlNodeAttribute {
@@ -177,11 +178,11 @@ class OmciMibAttrBytePerSec extends OmciMibAttr {
   }
 }
 
-class VlanTaggingBehaviourAttr extends OmciMibAttr {
+class OmciMibTableAttr extends OmciMibAttr {
   draw() {
     if (this.attrData.children.length === 0) return null;
 
-    let attr = MibAttrVlanTaggingBehaviour.parse(
+    let attr = this.MibAttrClass.parse(
       this.attrData.children[0].textContent.trim()
     );
     let draw_data = super.draw();
@@ -201,6 +202,20 @@ class VlanTaggingBehaviourAttr extends OmciMibAttr {
 
     draw_data["children"][0]["state"] = { opened: true };
     return draw_data;
+  }
+}
+
+class VlanTaggingBehaviourAttr extends OmciMibTableAttr {
+  constructor(attrName, attrData) {
+    super(attrName, attrData);
+    this.MibAttrClass = MibAttrVlanTaggingBehaviour;
+  }
+}
+
+class DynamicAccessControlAttr extends OmciMibTableAttr {
+  constructor(attrName, attrData) {
+    super(attrName, attrData);
+    this.MibAttrClass = MibAttrDynamicAccessControlList;
   }
 }
 
@@ -1267,6 +1282,9 @@ var omciTemplate = {
       chapter: "9.3.27",
       page: 169,
     },
+    AttrMap: {
+      DynamicAccessControlListTable: DynamicAccessControlAttr,
+    }
   },
 };
 
