@@ -984,6 +984,11 @@ var omciTemplate = {
         PointerToName: "ManagedEntityId",
         PointerType: "TcpUdpConfigData",
       },
+      {
+        PointerFromName: "RedundantSipAgentPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "SipAgentConfigData",
+      },
     ],
   },
   VoIpLineStatus: {
