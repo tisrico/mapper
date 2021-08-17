@@ -955,7 +955,33 @@ var omciTemplate = {
         PointerToName: "ManagedEntityId",
         PointerType: "AuthenticationSecurityMethod",
       },
+      {
+        PointerFromName: "NetworkDialPlanPointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "NetworkDialPlanTable",
+      },
+      {
+        PointerFromName: "AppServiceProfilePointer",
+        PointerToName: "ManagedEntityId",
+        PointerType: "VoIpAppServiceProfile",
+      },
     ]
+  },
+  NetworkDialPlanTable: {
+    G988: {
+      name: "Network dial plan table",
+      class_id: 145,
+      chapter: "9.9.10",
+      page: 328,
+    },
+  },
+  VoIpAppServiceProfile: {
+    G988: {
+      name: "VoIP application service profile",
+      class_id: 146,
+      chapter: "9.9.8",
+      page: 325,
+    },
   },
   AuthenticationSecurityMethod: {
     G988: {
@@ -1487,6 +1513,16 @@ var omciDisplayTemplate = {
   SipUserData: {
     NodeTemplate: {
       level: 6,
+    },
+  },
+  NetworkDialPlanTable: {
+    NodeTemplate: {
+      level: 7,
+    },
+  },
+  VoIpAppServiceProfile: {
+    NodeTemplate: {
+      level: 7,
     },
   },
   AuthenticationSecurityMethod: {
