@@ -955,20 +955,7 @@ var omciTemplate = {
         PointerToName: "ManagedEntityId",
         PointerType: "AuthenticationSecurityMethod",
       },
-      {
-        PointerFromName: "NetworkDialPlanPointer",
-        PointerToName: "ManagedEntityId",
-        PointerType: "NetworkDialPlanTable",
-      },
     ]
-  },
-  NetworkDialPlanTable: {
-    G988: {
-      name: "Network dial plan table",
-      class_id: 145,
-      chapter: "9.9.10",
-      page: 328,
-    },
   },
   AuthenticationSecurityMethod: {
     G988: {
@@ -1506,11 +1493,6 @@ var omciDisplayTemplate = {
     NodeTemplate: {
       level: 6,
       color: "#9C9C9C",
-    },
-  },
-  NetworkDialPlanTable: {
-    NodeTemplate: {
-      level: 7,
     },
   },
   VoIpVoiceCtp: {
