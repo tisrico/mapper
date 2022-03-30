@@ -829,7 +829,11 @@ var omciTemplate = {
         PointerTypeName: "AssociationType",
         PointerTypeMap: {
           "0": "MacBridgePortConfigData",
+          "1": "MapperServiceProfile",
           "2": "PptpEthernetUni",
+          "3": "IpHostConfigData",
+          "5": "GemInterworkingTp",
+          "6": "MulticastGemInterworkingTp",
           "10": "VirtualEthernetInterfacePoint",
         },
       },
