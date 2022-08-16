@@ -150,6 +150,10 @@ class NetNode {
     };
   }
 
+  showReference() {
+
+  }
+
   drawAttr(attrClassMap) {
     if (this.attributes == null && this.data != null) {
       this.attributes = [];

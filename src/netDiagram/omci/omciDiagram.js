@@ -292,6 +292,26 @@ class OmciMib extends NetXmlNode {
   drawAttr() {
     return super.drawAttr(omciTemplate[this.type]["AttrMap"]);
   }
+
+  showReference() {
+    let page = omciTemplate[this.type]["G988"].page;
+
+    let docUrl = "/doc/g.988.pdf";
+    let xhr = new XMLHttpRequest();
+
+    xhr.open('HEAD', docUrl, false);
+    xhr.send();
+    if (xhr.status != "200") {
+      docUrl = "http://buildbot.corp.netcomm.com.au:8010/pdg/Technical/Engineering%20Data/Standards%20Etc/ITU/G/G.988/T-REC-G.988-202206-I%21Amd5%21PDF-E.pdf";
+    }
+    let pageUrl = docUrl + "#page=" + page;
+
+    let width = window.screen.width/2;
+    let height = window.screen.height;
+    let options = 'popup,top=0px,left=0px,height=' +
+                  height + "px,width=" + width + "px";
+    window.open(pageUrl, '_blank', options);
+  }
 }
 
 class VoIpVoiceCtpMib extends OmciMib {
@@ -428,7 +448,7 @@ var omciTemplate = {
       name: "OMCI",
       class_id: 287,
       chapter: "9.12.8",
-      page: 357,
+      page: 430,
     },
     Link: [
       {
@@ -443,7 +463,7 @@ var omciTemplate = {
       name: "OLT-G",
       class_id: 131,
       chapter: "9.12.2",
-      page: 351,
+      page: 424,
     },
     AttrMap: {
       OltVendorId: OmciMibAttrHexString,
@@ -456,7 +476,7 @@ var omciTemplate = {
       name: "ANI-G",
       class_id: 263,
       chapter: "9.2.1",
-      page: 88,
+      page: 107,
     },
     Link: [
       {
@@ -472,7 +492,7 @@ var omciTemplate = {
       name: "ONU-G",
       class_id: 256,
       chapter: "9.1.1",
-      page: 55,
+      page: 64,
     },
     AttrMap: {
       VendorId: OmciMibAttrHexString,
@@ -493,7 +513,7 @@ var omciTemplate = {
       name: "ONU2-G",
       class_id: 257,
       chapter: "9.1.2",
-      page: 59,
+      page: 68,
     },
     AttrMap: {
       EquipmentId: OmciMibAttrHexString,
@@ -512,7 +532,7 @@ var omciTemplate = {
       name: "ONU-G",
       class_id: 256,
       chapter: "9.1.1",
-      page: 55,
+      page: 64,
     },
     AttrMap: {
       VendorId: OmciMibAttrHexString,
@@ -533,7 +553,7 @@ var omciTemplate = {
       name: "ONU2-G",
       class_id: 257,
       chapter: "9.1.2",
-      page: 59,
+      page: 68,
     },
     AttrMap: {
       EquipmentId: OmciMibAttrHexString,
@@ -552,7 +572,7 @@ var omciTemplate = {
       name: "VoIP config data",
       class_id: 138,
       chapter: "9.9.18",
-      page: 340,
+      page: 412,
     },
     Link: [
       {
@@ -572,7 +592,7 @@ var omciTemplate = {
       name: "Cardholder",
       class_id: 5,
       chapter: "9.1.5",
-      page: 67,
+      page: 78,
     },
     AttrMap: {
       ExpectedEquipmentId: OmciMibAttrHexString,
@@ -596,7 +616,7 @@ var omciTemplate = {
       name: "CircuitPack",
       class_id: 6,
       chapter: "9.1.6",
-      page: 73,
+      page: 84,
     },
     AttrMap: {
       SerialNumber: SerialNumberAttr,
@@ -616,7 +636,7 @@ var omciTemplate = {
       name: "Software Image",
       class_id: 7,
       chapter: "9.1.4",
-      page: 63,
+      page: 74,
     },
     AttrMap: {
       Version: OmciMibAttrHexString,
@@ -640,7 +660,7 @@ var omciTemplate = {
       name: "MAC bridge service profile",
       class_id: 45,
       chapter: "9.3.1",
-      page: 116,
+      page: 146,
     },
   },
   Dot1agCFMStack: {
@@ -648,7 +668,7 @@ var omciTemplate = {
       name: "Dot1ag CFM stack",
       class_id: 305,
       chapter: "9.3.25",
-      page: 165,
+      page: 197,
     },
     Link: [
       {
@@ -663,7 +683,7 @@ var omciTemplate = {
       name: "Dot1 rate limiter",
       class_id: 298,
       chapter: "9.3.18",
-      page: 152,
+      page: 185,
     },
     Link: [
       {
@@ -697,7 +717,7 @@ var omciTemplate = {
       name: "MAC bridge port configuration data",
       class_id: 47,
       chapter: "9.3.4",
-      page: 119,
+      page: 148,
     },
     Link: [
       {
@@ -740,7 +760,7 @@ var omciTemplate = {
       name: "VLAN tagging filter data",
       class_id: 84,
       chapter: "9.3.11",
-      page: 128,
+      page: 158,
     },
     AttrMap: {
       ForwardOperation: ForwardOptionAttr,
@@ -752,7 +772,7 @@ var omciTemplate = {
       name: "Power over Ethernet (PoE) control",
       class_id: 349,
       chapter: "9.5.6",
-      page: 210,
+      page: 246,
     },
     Link: [
       {
@@ -768,7 +788,7 @@ var omciTemplate = {
       name: "Physical path termination point Ethernet UNI",
       class_id: 11,
       chapter: "9.5.1",
-      page: 200,
+      page: 236,
     },
     Link: [
       {
@@ -785,7 +805,7 @@ var omciTemplate = {
       name: "Virtual Ethernet interface point",
       class_id: 329,
       chapter: "9.5.5",
-      page: 208,
+      page: 245,
     },
     Link: [
       {
@@ -801,7 +821,7 @@ var omciTemplate = {
       name: "UNI-G",
       class_id: 264,
       chapter: "9.12.1",
-      page: 349,
+      page: 422,
     },
     Link: [
       {
@@ -816,7 +836,7 @@ var omciTemplate = {
       name: "Extended VLAN tagging operation configuration data",
       class_id: 171,
       chapter: "9.3.13",
-      page: 133,
+      page: 163,
     },
     AttrMap: {
       DownstreamMode: DownstreamModeAttr,
@@ -860,7 +880,7 @@ var omciTemplate = {
       name: "IP host config data",
       class_id: 134,
       chapter: "9.4.1",
-      page: 190,
+      page: 225,
     },
   },
   Ipv6HostConfigData: {
@@ -868,7 +888,7 @@ var omciTemplate = {
       name: "IPv6 host config data",
       class_id: 347,
       chapter: "9.4.5",
-      page: 196,
+      page: 231,
     },
   },
   TcpUdpConfigData: {
@@ -876,7 +896,7 @@ var omciTemplate = {
       name: "TCP/UDP config data",
       class_id: 136,
       chapter: "9.4.3",
-      page: 194,
+      page: 229,
     },
     Link: [
       {
@@ -891,7 +911,7 @@ var omciTemplate = {
       name: "MGC config data",
       class_id: 136,
       chapter: "9.9.16",
-      page: 337,
+      page: 409,
     },
     Link: [
       {
@@ -906,7 +926,7 @@ var omciTemplate = {
       name: "VoIP voice CTP",
       class_id: 139,
       chapter: "9.9.4",
-      page: 317,
+      page: 389,
     },
     Link: [
       {
@@ -938,7 +958,7 @@ var omciTemplate = {
       name: "SIP user data",
       class_id: 153,
       chapter: "9.9.2",
-      page: 313,
+      page: 385,
     },
     AttrMap: {
       SipDisplayName: OmciMibAttrHexString,
@@ -976,7 +996,7 @@ var omciTemplate = {
       name: "Network dial plan table",
       class_id: 145,
       chapter: "9.9.10",
-      page: 328,
+      page: 401,
     },
   },
   VoIpAppServiceProfile: {
@@ -984,7 +1004,7 @@ var omciTemplate = {
       name: "VoIP application service profile",
       class_id: 146,
       chapter: "9.9.8",
-      page: 325,
+      page: 398,
     },
   },
   AuthenticationSecurityMethod: {
@@ -992,7 +1012,7 @@ var omciTemplate = {
       name: "Authentication security method",
       class_id: 148,
       chapter: "9.12.4",
-      page: 353,
+      page: 426,
     },
     AttrMap: {
       Username1: OmciMibAttrHexString,
@@ -1006,7 +1026,7 @@ var omciTemplate = {
       name: "SIP agent config data",
       class_id: 150,
       chapter: "9.9.3",
-      page: 314,
+      page: 387,
     },
     Link: [
       {
@@ -1026,7 +1046,7 @@ var omciTemplate = {
       name: "VoIP line status",
       class_id: 141,
       chapter: "9.9.11",
-      page: 329,
+      page: 402,
     },
     Link: [
       {
@@ -1041,7 +1061,7 @@ var omciTemplate = {
       name: "VoIP media profile",
       class_id: 58,
       chapter: "9.9.5",
-      page: 318,
+      page: 390,
     },
     Link: [
       {
@@ -1061,7 +1081,7 @@ var omciTemplate = {
       name: "Voice service profile",
       class_id: 142,
       chapter: "9.9.6",
-      page: 320,
+      page: 392,
     },
   },
   RtpProfileData: {
@@ -1069,7 +1089,7 @@ var omciTemplate = {
       name: "RTP profile data",
       class_id: 143,
       chapter: "9.9.7",
-      page: 324,
+      page: 396,
     },
   },
   PptpPotsUni: {
@@ -1078,7 +1098,7 @@ var omciTemplate = {
       name: "Physical path termination point POTS UNI",
       class_id: 53,
       chapter: "9.9.1",
-      page: 310,
+      page: 382,
     },
     Link: [
       {
@@ -1095,7 +1115,7 @@ var omciTemplate = {
       name: "IEEE 802.1p mapper service profile",
       class_id: 130,
       chapter: "9.3.10",
-      page: 126,
+      page: 156,
     },
     Link: [
       {
@@ -1164,7 +1184,7 @@ var omciTemplate = {
       name: "Multicast GEM interworking termination point",
       class_id: 281,
       chapter: "9.2.5",
-      page: 96,
+      page: 115,
     },
     Link: [
       {
@@ -1186,7 +1206,7 @@ var omciTemplate = {
       name: "GEM interworking termination point",
       class_id: 266,
       chapter: "9.2.4",
-      page: 94,
+      page: 113,
     },
     Link: [
       {
@@ -1201,7 +1221,7 @@ var omciTemplate = {
       name: "GEM port network CTP",
       class_id: 268,
       chapter: "9.2.3",
-      page: 92,
+      page: 111,
     },
     Link: [
       {
@@ -1236,7 +1256,7 @@ var omciTemplate = {
       name: "Traffic descriptor",
       class_id: 280,
       chapter: "9.2.12",
-      page: 106,
+      page: 125,
     },
     AttrMap: {
       CIR: OmciMibAttrBytePerSec,
@@ -1250,7 +1270,7 @@ var omciTemplate = {
       name: "Priority queue",
       class_id: 277,
       chapter: "9.2.10",
-      page: 101,
+      page: 120,
     },
     Link: [
       {
@@ -1271,7 +1291,7 @@ var omciTemplate = {
       name: "T-CONT",
       class_id: 262,
       chapter: "9.2.2",
-      page: 90,
+      page: 110,
     },
   },
   TrafficSchedulerG: {
@@ -1279,7 +1299,7 @@ var omciTemplate = {
       name: "Traffic scheduler",
       class_id: 278,
       chapter: "9.2.11",
-      page: 105,
+      page: 124,
     },
     Link: [
       {
@@ -1295,7 +1315,7 @@ var omciTemplate = {
       name: "Multicast subscriber config info",
       class_id: 310,
       chapter: "9.3.28",
-      page: 176,
+      page: 208,
     },
     Link: [
       {
@@ -1315,7 +1335,7 @@ var omciTemplate = {
       name: "Multicast operations profile",
       class_id: 309,
       chapter: "9.3.27",
-      page: 169,
+      page: 201,
     },
     AttrMap: {
       DynamicAccessControlListTable: DynamicAccessControlAttr,

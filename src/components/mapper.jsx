@@ -296,6 +296,10 @@ class Mapper extends Component {
         this.visNetwork.on("afterDrawing", () => {
             this.showSpinner(false);
         });
+        this.visNetwork.on("doubleClick", (visNetworkObj)=>{
+            let selected = this.diagram.getNode(visNetworkObj.nodes[0]);
+            if (selected) selected.showReference();
+        });
 
         let t1 = performance.now();
         this.displayInfo = {
