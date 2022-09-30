@@ -184,7 +184,7 @@ class Menu extends Component {
                             id="dropdown-basic-button"
                             title={
                                 settings.show_all
-                                    ? "Showing All Objects"
+                                    ? "Showing All Objects/Links"
                                     : selectedView === undefined ||
                                       !views.includes(selectedView)
                                     ? "Please Select..."

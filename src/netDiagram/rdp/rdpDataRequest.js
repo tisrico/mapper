@@ -1,6 +1,7 @@
 import requestData from "../netDataRequest";
 
 function RdpDataRequest(dataReadyHandler, errorHandler) {
+    return;
     let requests = [];
 
     requests.push(requestData({name: "PORT", url: "np/dumpNP.cmd?cmd=port"}));

@@ -1,20 +1,21 @@
 import vis from "vis";
 import djson from "dirty-json";
 
-class NetNodeAttribute {
-  constructor(attrName, attrData, attrMap) {
+export class NetNodeAttribute {
+  constructor(attrName, attrData, attrMap, help) {
     this.attrName = attrName;
     this.attrData = attrData;
-
     this.attrMap = attrMap;
+    this.help = help;
   }
 
   _drawAttrTree(attrName, attrChildren) {
     return {
-        "icon": "jstree-file",
-        "text": attrName,
-        "state": { "opened" : true },
-        "children": attrChildren,
+        icon: "jstree-file",
+        text: attrName,
+        state: { "opened" : true },
+        children: attrChildren,
+        a_attr: {title: this.help},
     };
   }
 
@@ -22,10 +23,11 @@ class NetNodeAttribute {
     return attrData.toString();
   }
 
-  _drawPlainAttr(attrName, attrData) {
+  _drawPlainAttr(attrName, attrData,) {
       return {
-        "icon" : "jstree-file",
-        "text": attrName + ": " + this._getAttrData(attrData),
+        icon : "jstree-file",
+        text: attrName + ": " + this._getAttrData(attrData),
+        a_attr: {title: this.help},
       };
   }
 
@@ -92,7 +94,7 @@ export class NetJsonNodeAttribute extends NetNodeAttribute {
   }
 }
 
-class NetNode {
+export class NetNode {
   static _splitLinkPointerType(pointerType) {
     if (!pointerType) {
       return null;
@@ -157,14 +159,15 @@ class NetNode {
   drawAttr(attrClassMap) {
     if (this.attributes == null && this.data != null) {
       this.attributes = [];
-      this.iterateData((key, data) => {
+      this.iterateData((key, data, help) => {
+
         let attrClass = this._getAttrClass(key);
         if (typeof attrClass === 'object') {
           attrClass = this.defaultAttrClass;
-          this.attributes.push(new attrClass(key, data, this.attrMap[this._getRealAttrName(key)]));
+          this.attributes.push(new attrClass(key, data, this.attrMap[this._getRealAttrName(key)], help));
         }
         else if (typeof attrClass === 'function') {
-          this.attributes.push(new attrClass(key, data, null));
+          this.attributes.push(new attrClass(key, data, null, help));
         }
       });
     }
@@ -459,6 +462,46 @@ export class NetDiagram {
       return { nodes: nodes, edges: edges };
   }
 
+  drawByLinkTypes(allowedLinkTypes, lastAvoidable, avoided) {
+      let nodes = new Set();
+      let node_types = new Set();
+      let edgesObjects = [];
+      let nodesObjects = [];
+
+      for (let link of this.links) {
+        if (allowedLinkTypes.indexOf(link.constructor.name) != -1) {
+          edgesObjects.push(link.draw());
+
+          nodes.add(link.fromNode.id);
+          nodes.add(link.toNode.id);
+        }
+      }
+
+      for (let id of nodes) {
+        let node = this.node_list.find(node => node.id == id);
+        if (node) {
+
+          node_types.add(node.type);
+          if (avoided.indexOf(node.type) != -1) {
+            continue;
+          }
+
+          nodesObjects.push(node.draw());
+        }
+      }
+
+      let new_avoidable = [...node_types];
+
+      // avoidable doesn't change, so last avoided should be fine
+      // otherwise, we need rerun, wtithout anything to be avoided
+      if(new_avoidable.sort().join(",") == lastAvoidable.sort().join(",")) {
+        return { nodes: new vis.DataSet(nodesObjects), edges: new vis.DataSet(edgesObjects), avoidable: new_avoidable};
+      }
+      else {
+        return this.drawByLinkTypes(allowedLinkTypes, new_avoidable, []);
+      }
+  }
+
   _findAvoidLink(fromType, toType, avoidLinkInfo) {
       if (!avoidLinkInfo ||
           avoidLinkInfo[fromType] == null)
@@ -535,11 +578,13 @@ export class NetDiagram {
   }
 
   _getNodeClass(templateInfo) {
-    return templateInfo.NodeClass || this.defaultNodeClass;
+    if (templateInfo) return templateInfo.NodeClass || this.defaultNodeClass;
+    return this.defaultNodeClass;
   }
 
   _getLinkClass(templateInfo) {
-    return templateInfo.LinkClass || this.defaultLinkCLass;
+    if (templateInfo) return templateInfo.LinkClass || this.defaultLinkCLass;
+    return this.defaultLinkCLass;
   }
 
   _getNextNodeId() {

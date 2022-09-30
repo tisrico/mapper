@@ -1,21 +1,14 @@
 export var RdpConfigDiagramDisplay = {
-  port: {
-    AvoidableNode: ["queue_cfg", "vlan_action"],
-    AvoidLink: {
-      flow: "port",
-      gem: "flow",
-    },
-    AvoidKey: [
-      "port/index=cpu0",
-      "port/index=switch",
-      "port/index=lag0",
-      "port/index=lag1",
-      "port/index=lan16",
-      "port/index=lan17",
-      "port/index=lan18",
-      "port/index=lan19",
-    ],
-  },
+  // keep default/all links the first member of this data structure
+  "All Links": ["RdpParentLink", "RdpUpstreamLink", "RdpDownstreamLink", "RdpBidirectionalStreamLink", "RdpReferenceLink" ],
+  "Traffic Links": ["RdpUpstreamLink", "RdpDownstreamLink", "RdpBidirectionalStreamLink"],
+  "Upstream Links": ["RdpUpstreamLink"],
+  "Downstream Links": ["RdpDownstreamLink"],
+  "Bidirectional Links": ["RdpBidirectionalStreamLink"],
+  "Ownership Links": ["RdpParentLink"],
+  "Reference Links": ["RdpReferenceLink"],
+  "None Traffic Links": ["RdpReferenceLink", "RdpParentLink"],
+  filter_by_links: true,
 };
 
 export var RdpConfigVisDisplay = {
@@ -38,7 +31,7 @@ export var RdpConfigVisDisplay = {
       centralGravity: 0.0,
       springLength: 100,
       springConstant: 0.01,
-      nodeDistance: 120,
+      nodeDistance: 280,
       damping: 0.09,
     },
   },
@@ -52,6 +45,7 @@ export var RdpConfigVisDisplay = {
       align: "bottom",
       size: 26,
     },
+    hoverWidth: 6,
   },
   nodes: {
     font: {

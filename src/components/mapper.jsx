@@ -55,6 +55,7 @@ class Mapper extends Component {
         if (this.diagram && settings.show_all) this.showSpinner(true);
 
         this.state.settings.show_all = settings.show_all;
+
         this.setState({ settings });
 
         this.showNetwork();
@@ -125,7 +126,7 @@ class Mapper extends Component {
         if (this.diagram && this.state.settings.show_all) this.showSpinner(true);
 
         this.state.avoidedNodes = avoidedNodes;
-        this.setState({ avoidedNodes });
+        // this.setState({ avoidedNodes });
         this.showNetwork();
     };
 
@@ -185,7 +186,15 @@ class Mapper extends Component {
         /* Get views */
         let views = [];
         let configDiagramDisplay = this.props.configDiagramDisplay;
+
         for (let key in configDiagramDisplay) {
+            if (configDiagramDisplay.filter_by_links) {
+                if (key != "filter_by_links") {
+                    views.push(key);
+                }
+                continue;
+            }
+
             for (let i = 0; i < this.diagram.nodes[key].length; i++) {
                 let mib = this.diagram.nodes[key][i];
 
@@ -198,7 +207,10 @@ class Mapper extends Component {
                 views.push(option);
             }
         }
-        views.sort();
+
+        if (!configDiagramDisplay.filter_by_links) {
+            views.sort();
+        }
 
         let t1 = performance.now();
         this.networkInfo = {
@@ -251,30 +263,47 @@ class Mapper extends Component {
         if (!this.diagram) return;
 
         var t0 = performance.now();
+        let data = null;
 
-        let displayTreeRoot = null;
-        if (!this.state.settings.show_all && this.state.selectedView != null) {
-            let selected = this.state.selectedView.split(" ");
-            if (selected.length === 2) {
-                displayTreeRoot = { type: selected[0], key: selected[1] };
+        if (!this.props.configDiagramDisplay.filter_by_links) {
+            let displayTreeRoot = null;
+            if (!this.state.settings.show_all && this.state.selectedView != null) {
+                let selected = this.state.selectedView.split(" ");
+                if (selected.length === 2) {
+                    displayTreeRoot = { type: selected[0], key: selected[1] };
+                }
+            }
+
+            if (displayTreeRoot == null) {
+                this.updateAvoidableNodes(Object.keys(this.diagram.nodes));
+                data = this.diagram.draw(this.state.avoidedNodes);
+            } else {
+                this.updateAvoidableNodes(
+                    this.props.configDiagramDisplay[displayTreeRoot.type]["AvoidableNode"]);
+
+                data = this.diagram.drawNodeTree(
+                    displayTreeRoot.type,
+                    displayTreeRoot.key,
+                    this.state.avoidedNodes,
+                    this.props.configDiagramDisplay[displayTreeRoot.type][
+                        "AvoidLink"
+                    ]
+                );
             }
         }
+        else {
+            let allowedLinkTypes = this.props.configDiagramDisplay[this.state.selectedView];
+            if(this.state.settings.show_all) {
+                // get the default view
+                let key = Object.keys(this.props.configDiagramDisplay)[0];
+                allowedLinkTypes = this.props.configDiagramDisplay[key];
+            }
 
-        let data = null;
-        if (displayTreeRoot == null) {
-            this.updateAvoidableNodes(Object.keys(this.diagram.nodes));
-            data = this.diagram.draw(this.state.avoidedNodes);
-        } else {
-            this.updateAvoidableNodes(
-                this.props.configDiagramDisplay[displayTreeRoot.type]["AvoidableNode"]);
-            data = this.diagram.drawNodeTree(
-                displayTreeRoot.type,
-                displayTreeRoot.key,
-                this.state.avoidedNodes,
-                this.props.configDiagramDisplay[displayTreeRoot.type][
-                    "AvoidLink"
-                ]
-            );
+            if (allowedLinkTypes && this.diagram.drawByLinkTypes) {
+                data = this.diagram.drawByLinkTypes(allowedLinkTypes, this.state.avoidableNodes, this.state.avoidedNodes);
+                this.updateAvoidableNodes(data.avoidable);
+                delete data.avoids;
+            }
         }
 
         const container = this.visNetworkRef.current;
