@@ -8,6 +8,8 @@ import {
   MibAttrDynamicAccessControlList,
 } from "./omciAttribute.js";
 
+var globalRefWindow = undefined;
+
 class OmciMibAttr extends NetXmlNodeAttribute {
   _drawPlainAttr(attrName, attrData) {
     let data = attrData.textContent.trim();
@@ -310,7 +312,22 @@ class OmciMib extends NetXmlNode {
     let height = window.screen.height;
     let options = 'popup,top=0px,left=0px,height=' +
                   height + "px,width=" + width + "px";
-    window.open(pageUrl, '_blank', options);
+
+    if (!globalRefWindow || globalRefWindow.closed) {
+      globalRefWindow = window.open(pageUrl, '_blank', options);
+    }
+    else {
+      // directly replace to pageUrl wouldn't work with Chrome.
+      globalRefWindow.location.replace("about:blank");
+      window.setTimeout(()=>{
+          if (globalRefWindow && !globalRefWindow.closed) {
+            globalRefWindow.location.replace(pageUrl);
+          }
+          else {
+            globalRefWindow = window.open(pageUrl, '_blank', options);
+          }
+      }, 100);
+    }
   }
 }
 
