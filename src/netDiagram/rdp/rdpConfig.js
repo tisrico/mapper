@@ -1,14 +1,16 @@
 export var RdpConfigDiagramDisplay = {
   // keep default/all links the first member of this data structure
-  "All Links": ["RdpParentLink", "RdpUpstreamLink", "RdpDownstreamLink", "RdpBidirectionalStreamLink", "RdpReferenceLink" ],
-  "Traffic Links": ["RdpUpstreamLink", "RdpDownstreamLink", "RdpBidirectionalStreamLink"],
+  "All Links": ["RdpParentLink", "RdpUpstreamLink", "RdpDownstreamLink", "RdpBidirectionalStreamLink", "RdpReferenceLink", "CpuLink"],
+  "Traffic Links": ["RdpUpstreamLink", "RdpDownstreamLink", "RdpBidirectionalStreamLink", "CpuLink"],
   "Upstream Links": ["RdpUpstreamLink"],
   "Downstream Links": ["RdpDownstreamLink"],
-  "Bidirectional Links": ["RdpBidirectionalStreamLink"],
+//  "Bidirectional Links": ["RdpBidirectionalStreamLink"],
+  "Cpu/Host Links": ["CpuLink"],
   "Ownership Links": ["RdpParentLink"],
   "Reference Links": ["RdpReferenceLink"],
-  "None Traffic Links": ["RdpReferenceLink", "RdpParentLink"],
+  "None Traffic Links": ["RdpReferenceLink", "RdpParentLink",],
   filter_by_links: true,
+  filter_by_flows: true,
 };
 
 export var RdpConfigVisDisplay = {
@@ -28,17 +30,17 @@ export var RdpConfigVisDisplay = {
   physics: {
     enabled: true,
     hierarchicalRepulsion: {
-      centralGravity: 0.0,
+      centralGravity: 0,
       springLength: 100,
       springConstant: 0.01,
-      nodeDistance: 280,
+      nodeDistance: 320,
       damping: 0.09,
     },
   },
   edges: {
     smooth: {
       type: "cubicBezier",
-      forceDirection: "none",
+      forceDirection: "horizontal",
       roundness: 0.6,
     },
     font: {

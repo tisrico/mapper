@@ -462,6 +462,45 @@ export class NetDiagram {
       return { nodes: nodes, edges: edges };
   }
 
+  drawByFlow(name) {
+    if(!this.flows) {
+      return { nodes: new vis.DataSet([]), edges: new vis.DataSet([])};
+    }
+
+    let flows = this.bridges;
+    if (name.indexOf("us/") == 0) {
+      flows = this.flows.up;
+    }
+    else if (name.indexOf("ds/") == 0) {
+      flows = this.flows.down;
+    }
+
+    let flow = null;
+    for (let f of flows) {
+      if (f.name == name) {
+        flow = f;
+        break;
+      }
+    }
+
+    if (!flow) {
+      return;
+    }
+
+    let edgesObjects = [];
+    let nodesObjects = [];
+
+    for (let link of this.links) {
+      edgesObjects.push(link.draw());
+    }
+
+    for (let node of flow.nodes) {
+      nodesObjects.push(node.draw());
+    }
+
+    return { nodes: new vis.DataSet(nodesObjects), edges: new vis.DataSet(edgesObjects)};
+  }
+
   drawByLinkTypes(allowedLinkTypes, lastAvoidable, avoided) {
       let nodes = new Set();
       let node_types = new Set();

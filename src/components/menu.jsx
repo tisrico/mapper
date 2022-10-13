@@ -103,6 +103,7 @@ class Menu extends Component {
             onSaveData,
             onTogglePhysics,
             onToggleShowAll,
+            onToggleSelected,
             views,
             selectedView,
             onSelectView,
@@ -161,6 +162,12 @@ class Menu extends Component {
                                     {this.render_checkbox(settings.show_all)}
                                     <span>&nbsp; Show All</span>
                                 </NavDropdown.Item>
+                                <NavDropdown.Item
+                                    id="toggleSelected"
+                                    onClick={() => onToggleSelected()}
+                                >
+                                    <span>&nbsp; Invert Hidden</span>
+                                </NavDropdown.Item> 
                             </NavDropdown>
                             <NavDropdown
                                 id="menuHide"

@@ -61,6 +61,22 @@ class Mapper extends Component {
         this.showNetwork();
     };
 
+    handleToggleSelected = () => {
+        let avoidedNodes = [];
+
+        for (let node of this.state.avoidableNodes) {
+            if (!this.state.avoidedNodes.includes(node)) {
+                avoidedNodes.push(node);
+            }
+        }
+
+        if (this.diagram && this.state.settings.show_all) this.showSpinner(true);
+
+        this.state.avoidedNodes = avoidedNodes;
+        // this.setState({ avoidedNodes });
+        this.showNetwork();
+    };
+
     handleRefreshData = () => {
         this.startRequestData();
     }
@@ -189,7 +205,7 @@ class Mapper extends Component {
 
         for (let key in configDiagramDisplay) {
             if (configDiagramDisplay.filter_by_links) {
-                if (key != "filter_by_links") {
+                if (key != "filter_by_links" && key != "filter_by_flows") {
                     views.push(key);
                 }
                 continue;
@@ -210,6 +226,22 @@ class Mapper extends Component {
 
         if (!configDiagramDisplay.filter_by_links) {
             views.sort();
+        }
+
+        if(configDiagramDisplay.filter_by_flows && this.diagram.bridges) {
+            for(let bridge of this.diagram.bridges) {
+                views.push(bridge.name);
+            }
+        }
+
+        if(configDiagramDisplay.filter_by_flows && this.diagram.flows) {
+            for(let flow of this.diagram.flows.down) {
+                views.push(flow.name);
+            }
+
+            for(let flow of this.diagram.flows.up) {
+                views.push(flow.name);
+            }
         }
 
         let t1 = performance.now();
@@ -292,17 +324,26 @@ class Mapper extends Component {
             }
         }
         else {
-            let allowedLinkTypes = this.props.configDiagramDisplay[this.state.selectedView];
-            if(this.state.settings.show_all) {
-                // get the default view
-                let key = Object.keys(this.props.configDiagramDisplay)[0];
-                allowedLinkTypes = this.props.configDiagramDisplay[key];
+            if (this.props.configDiagramDisplay.filter_by_flows && 
+                (this.state.selectedView.indexOf("us/") == 0 || 
+                this.state.selectedView.indexOf("ds/") == 0 ||
+                this.state.selectedView.indexOf("br/") == 0 )) {
+                data = this.diagram.drawByFlow(this.state.selectedView);
             }
+            else {
 
-            if (allowedLinkTypes && this.diagram.drawByLinkTypes) {
-                data = this.diagram.drawByLinkTypes(allowedLinkTypes, this.state.avoidableNodes, this.state.avoidedNodes);
-                this.updateAvoidableNodes(data.avoidable);
-                delete data.avoids;
+                let allowedLinkTypes = this.props.configDiagramDisplay[this.state.selectedView];
+                if(this.state.settings.show_all) {
+                    // get the default view
+                    let key = Object.keys(this.props.configDiagramDisplay)[0];
+                    allowedLinkTypes = this.props.configDiagramDisplay[key];
+                }
+
+                if (allowedLinkTypes && this.diagram.drawByLinkTypes) {
+                    data = this.diagram.drawByLinkTypes(allowedLinkTypes, this.state.avoidableNodes, this.state.avoidedNodes);
+                    this.updateAvoidableNodes(data.avoidable);
+                    delete data.avoids;
+                }
             }
         }
 
@@ -388,6 +429,7 @@ class Mapper extends Component {
                     onSaveData={this.handleSaveData}
                     onTogglePhysics={this.handleTogglePhysics}
                     onToggleShowAll={this.handleToggleShowAll}
+                    onToggleSelected={this.handleToggleSelected}
                     views={views}
                     selectedView={selectedView}
                     onSelectView={this.handleSelectView}
