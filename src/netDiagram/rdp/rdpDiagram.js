@@ -548,7 +548,7 @@ class RdpDiagram extends NetDiagram {
             let related = [];
             for(let node of nodes) {
                 //let node_types = ["egress_tm", "pbit_to_gem", "pbit_to_queue", "cpu", "tc_to_queue", "pbit_to_gem_table"];
-                let node_types = ["cpu"];
+                let node_types = ["cpu", "pbit_to_queue", "dscp_to_pbit"];
                 let r = self.findConnected(node, node_types);
                 related = related.concat(r);
             }
@@ -557,6 +557,38 @@ class RdpDiagram extends NetDiagram {
             // unique the node list
             nodes = [... new Set(nodes)];
 
+            // find nodes that connected to pbit_to_queue
+            console.log(nodes);
+            let p2q = nodes.find(n=>n.type == "pbit_to_queue");
+            if (p2q) {
+                console.log()
+                for (let port of p2q.data.upstream) {
+                    if (!nodes.find((n)=>n.key==port)) {
+                        continue;
+                    }
+
+                    console.log("port", port);
+                    port = self.findNode(port);
+                    // check which child is in
+                    for (let child of port.data.children) {
+                        if (!nodes.find((n)=>n.key==child)) {
+                            continue;
+                        }
+
+                        // child -> p2q -> port
+                        let cls1 = RdpUpstreamLink;
+                        let cls2 = RdpDownstreamLink;
+                        if (port.key.indexOf("port/index=lan") == 0) {
+                            cls1 = RdpDownstreamLink;
+                            cls2 = RdpUpstreamLink;
+                        }
+
+                        self.addReplace(child, p2q, cls1);
+                        self.addReplace(p2q, port, cls1);
+                    }
+                }
+            }
+
             let bridge = {
                 name: "br/" + object.key,
                 nodes: nodes
@@ -564,6 +596,26 @@ class RdpDiagram extends NetDiagram {
             // console.log(bridge);
             self.bridges.push(bridge);
         }, "bridge");
+    }
+
+    addReplace(from, to, cls) {
+        console.log("addReplace", from, to, cls);
+        for (let link of this.links) {
+            if(link.constructor.name == cls.name &&
+                ((link.fromNode.id == from.id && link.toNode.id == to.id) || (
+                    link.fromNode.id == to.id && link.toNode.id == from.id))) {
+                console.log('here we go');
+                if(link.fromNode != from) {
+                    link.fromNode = to;
+                    link.toNode = from;
+                console.log('here we go !');
+                }
+                else {
+                    this.addLink(new cls(from, to));
+                }
+                return;
+            }
+        }
     }
 
     buildFlows() {
@@ -1166,6 +1218,7 @@ var rdpTempate = {
             reversed: false
         }],
     },
+
     port: {
         linkables_ex: [{
             link_keys: ["ingress_filter", "*", "enabled"],
